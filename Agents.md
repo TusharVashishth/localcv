@@ -30,6 +30,10 @@
     - `ui/`: Shadcn UI components.
     - `common/`: Common components used across the app.
     - `features/`: Feature-specific components and logic.
+      - `components/`: React components for the feature.
+      - `hooks/`: Custom hooks for the feature.
+      - `types/`: TypeScript types for the feature.
+      - `schema/`: Zod schemas for validating data related to the feature.
   - `app/`: Next.js pages.
   - `lib/`: Utility functions and libraries.
   - `globals.css`: Global styles using Tailwind CSS.
