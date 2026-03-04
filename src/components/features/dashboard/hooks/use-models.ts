@@ -35,7 +35,6 @@ export function useModels() {
                 if (!response.ok) throw new Error("Failed to fetch models");
 
                 const data: ModelsResponse = await response.json();
-                console.log("Fetched models data:", JSON.stringify(data, null, 2));
                 const parsed: ModelProvider[] = Object.entries(data).map(
                     ([providerId, providerObj]) => ({
                         id: providerObj?.id ?? providerId,

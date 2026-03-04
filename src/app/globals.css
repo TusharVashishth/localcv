@@ -120,7 +120,32 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer utilities {
+  .resume-page {
+    width: 210mm;
+    min-height: 297mm;
+    page-break-inside: avoid;
+  }
+
+  @media print {
+    .resume-page {
+      width: 100%;
+      min-height: auto;
+      margin: 0;
+      border: none;
+      box-shadow: none;
+      break-inside: avoid;
+    }
+  }
+}
+
+::view-transition-old(root), ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
 }

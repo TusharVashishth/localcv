@@ -4,33 +4,48 @@ export interface AIConfig {
     id?: number;
     provider: string;
     modelName: string;
-    apiKey: string;
+    encryptedApiKey: string;
     createdAt: Date;
     updatedAt: Date;
 }
 
-export interface Resume {
+export interface Profile {
     id?: number;
-    title: string;
-    templateId: string;
-    fullName: string;
-    email: string;
-    phone: string;
-    location: string;
+    industry: string;
+    targetRole: string;
+    profile: ResumeProfile;
     summary: string;
     experience: WorkExperience[];
     education: Education[];
     skills: string[];
+    projects: Projects[];
+    certifications: Certification[];
+    languages: LanguageSkill[];
     createdAt: Date;
     updatedAt: Date;
+}
+
+export type Resume = Profile;
+
+export interface ResumeProfile {
+    fullName: string;
+    headline: string;
+    email: string;
+    phone: string;
+    location: string;
+    website?: string;
+    linkedin?: string;
+    github?: string;
 }
 
 export interface WorkExperience {
     company: string;
     role: string;
+    location?: string;
     startDate: string;
     endDate: string;
-    description: string;
+    description?: string;
+    achievements: string[];
 }
 
 export interface Education {
@@ -39,4 +54,24 @@ export interface Education {
     field: string;
     startDate: string;
     endDate: string;
+}
+
+export interface Projects {
+    name: string;
+    description: string;
+    highlights: string[];
+    technologies: string[];
+    link?: string;
+}
+
+export interface Certification {
+    name: string;
+    issuer: string;
+    issueDate: string;
+    credentialId?: string;
+}
+
+export interface LanguageSkill {
+    name: string;
+    proficiency: string;
 }
