@@ -5,15 +5,19 @@
 import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { FileText, Settings2 } from "lucide-react";
-import { RESUME_TEMPLATES } from "@/components/features/resume-templates";
 import {
+  RESUME_TEMPLATES,
   DEFAULT_STYLE_CONFIG,
+  getTemplateDefaultSectionOrder,
+  resolveSectionOrder,
+  type ResumeSectionKey,
   type ResumeStyleConfig,
-} from "@/components/features/resume-templates/types";
+} from "@/components/features/resume-templates";
 import { TemplateSelector } from "./template-selector";
 import { EditorToolbar } from "./editor-toolbar";
 import { ResumePreview, PREVIEW_ELEMENT_ID } from "./resume-preview";
 import { DownloadActions } from "./download-actions";
+import { SectionPriorityEditor } from "./section-priority-editor";
 import { useProfile } from "@/components/features/profile/hooks/use-profile";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +36,11 @@ export function BuilderClient() {
   const [styleConfig, setStyleConfig] =
     useState<ResumeStyleConfig>(DEFAULT_STYLE_CONFIG);
   const [showToolbar, setShowToolbar] = useState(true);
+  const [sectionOrderByTemplate, setSectionOrderByTemplate] = useState<
+    Record<string, ResumeSectionKey[]>
+  >(() => ({
+    [selectedTemplateId]: getTemplateDefaultSectionOrder(selectedTemplateId),
+  }));
 
   const selectedTemplate = useMemo(
     () =>
@@ -40,9 +49,22 @@ export function BuilderClient() {
     [selectedTemplateId],
   );
 
+  const selectedSectionOrder = useMemo(
+    () =>
+      resolveSectionOrder(
+        sectionOrderByTemplate[selectedTemplate.id] ??
+          getTemplateDefaultSectionOrder(selectedTemplate.id),
+      ),
+    [sectionOrderByTemplate, selectedTemplate.id],
+  );
+
   /* ****** Apply accent color default from template when switching ****** */
   const handleSelectTemplate = useCallback((id: string) => {
     setSelectedTemplateId(id);
+    setSectionOrderByTemplate((prev) => {
+      if (prev[id]) return prev;
+      return { ...prev, [id]: getTemplateDefaultSectionOrder(id) };
+    });
     const tpl = RESUME_TEMPLATES.find((t) => t.id === id);
     if (tpl?.defaultAccentColor) {
       setStyleConfig((prev) => ({
@@ -57,6 +79,16 @@ export function BuilderClient() {
       setStyleConfig((prev) => ({ ...prev, ...updates }));
     },
     [],
+  );
+
+  const handleSectionOrderChange = useCallback(
+    (nextOrder: ResumeSectionKey[]) => {
+      setSectionOrderByTemplate((prev) => ({
+        ...prev,
+        [selectedTemplate.id]: resolveSectionOrder(nextOrder),
+      }));
+    },
+    [selectedTemplate.id],
   );
 
   if (isLoading) {
@@ -121,18 +153,26 @@ export function BuilderClient() {
                 Your saved profile details are loaded automatically.
               </CardDescription>
             </CardHeader>
-            <CardContent
-              className="space-y-4 overflow-y-auto"
-              style={{ maxHeight: "calc(100vh - 160px)" }}
-            >
-              {/* Template list with thumbnails */}
-              <TemplateSelector
-                templates={RESUME_TEMPLATES}
-                selectedId={selectedTemplate.id}
-                onSelect={handleSelectTemplate}
-                styleConfig={styleConfig}
-                previewData={profile}
-              />
+            <CardContent className="space-y-4">
+              {/* Template list with fixed-height inner scroll */}
+              <div className="max-h-64 sm:max-h-72 lg:max-h-[calc(100vh-65vh)] overflow-y-auto pr-1">
+                <TemplateSelector
+                  templates={RESUME_TEMPLATES}
+                  selectedId={selectedTemplate.id}
+                  onSelect={handleSelectTemplate}
+                  styleConfig={styleConfig}
+                  previewData={profile}
+                />
+              </div>
+
+              {/* Always visible: no scroll needed to reorder sections */}
+              <div className="pt-1 border-t">
+                <p className="text-xs font-semibold">Section Priority</p>
+                <SectionPriorityEditor
+                  order={selectedSectionOrder}
+                  onChange={handleSectionOrderChange}
+                />
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -164,6 +204,7 @@ export function BuilderClient() {
               template={selectedTemplate}
               data={profile}
               styleConfig={styleConfig}
+              sectionOrder={selectedSectionOrder}
             />
           </CardContent>
         </Card>

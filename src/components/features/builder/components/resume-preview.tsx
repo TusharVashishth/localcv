@@ -5,6 +5,7 @@
 import type {
   ResumeTemplate,
   ResumeTemplateData,
+  ResumeSectionKey,
 } from "@/components/features/resume-templates";
 import type { ResumeStyleConfig } from "@/components/features/resume-templates/types";
 
@@ -14,12 +15,14 @@ interface ResumePreviewProps {
   template: ResumeTemplate;
   data: ResumeTemplateData;
   styleConfig: ResumeStyleConfig;
+  sectionOrder?: ResumeSectionKey[];
 }
 
 export function ResumePreview({
   template,
   data,
   styleConfig,
+  sectionOrder,
 }: ResumePreviewProps) {
   const TemplateComponent = template.component;
 
@@ -34,7 +37,11 @@ export function ResumePreview({
     <div className="rounded-md border bg-background overflow-auto">
       {/* ****** Wrapper targeted by PDF export ****** */}
       <div id={PREVIEW_ELEMENT_ID}>
-        <TemplateComponent data={data} styleConfig={resolvedConfig} />
+        <TemplateComponent
+          data={data}
+          styleConfig={resolvedConfig}
+          sectionOrder={sectionOrder}
+        />
       </div>
     </div>
   );

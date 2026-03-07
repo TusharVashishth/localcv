@@ -28,8 +28,8 @@ export function TemplateSelector({
   const data = previewData ?? TEMPLATE_PREVIEW_DATA;
 
   return (
-    /* ****** Mobile: horizontal scroll; Desktop (inside sidebar): vertical stack ****** */
-    <div className="flex gap-3 overflow-x-auto pb-2 snap-x lg:flex-col lg:overflow-x-visible lg:gap-0 lg:space-y-3 lg:pb-0">
+    /* ****** Vertical stack with contained width to avoid page-level overflow ****** */
+    <div className="flex flex-col gap-3 pb-1 pr-1 overflow-x-hidden">
       {templates.map((template) => {
         const isSelected = template.id === selectedId;
         const TemplateComponent = template.component;
@@ -47,8 +47,7 @@ export function TemplateSelector({
             type="button"
             onClick={() => onSelect(template.id)}
             className={cn(
-              /* mobile: fixed width card; desktop: full width */
-              "shrink-0 w-40 snap-start rounded-lg border-2 overflow-hidden text-left transition-all hover:shadow-md lg:w-full lg:shrink",
+              "w-full rounded-lg border-2 overflow-hidden text-left transition-all hover:shadow-md",
               isSelected
                 ? "border-primary shadow-md ring-2 ring-primary/20"
                 : "border-border hover:border-muted-foreground/40",

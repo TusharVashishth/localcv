@@ -11,8 +11,6 @@ export interface AIConfig {
 
 export interface Profile {
     id?: number;
-    industry: string;
-    targetRole: string;
     profile: ResumeProfile;
     summary: string;
     experience: WorkExperience[];
@@ -25,17 +23,20 @@ export interface Profile {
     updatedAt: Date;
 }
 
-export type Resume = Profile;
+export type Resume = Profile & {
+    title: string;
+    templateId: string;
+};
 
 export interface ResumeProfile {
     fullName: string;
-    headline: string;
     email: string;
     phone: string;
     location: string;
     website?: string;
     linkedin?: string;
     github?: string;
+    photo?: string;
 }
 
 export interface WorkExperience {

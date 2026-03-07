@@ -1,6 +1,6 @@
 /* ****** Executive Resume Template ****** */
 
-import type { ResumeTemplateData } from "./index";
+import type { ResumeSectionKey, ResumeTemplateData } from "./index";
 import type { ResumeStyleConfig } from "./types";
 import { StandardTemplate } from "./standard-template";
 
@@ -8,16 +8,19 @@ export function ExecutiveTemplate({
   data,
   compact,
   styleConfig,
+  sectionOrder,
 }: {
   data: ResumeTemplateData;
   compact?: boolean;
   styleConfig?: ResumeStyleConfig;
+  sectionOrder?: ResumeSectionKey[];
 }) {
   return (
     <StandardTemplate
       data={data}
       compact={compact}
       styleConfig={styleConfig}
+      sectionOrder={sectionOrder}
       variant={{
         pageClassName: "font-serif",
         headerClassName: "pb-4 border-b-2 border-border text-center space-y-1",

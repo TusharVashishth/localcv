@@ -11,7 +11,6 @@ type SectionKey =
 
 export interface ExtractedResumeProfile {
     fullName: string;
-    headline: string;
     email: string;
     phone: string;
     location: string;
@@ -59,8 +58,6 @@ export interface ExtractedLanguage {
 }
 
 export interface ExtractedCvData {
-    industry: string;
-    targetRole: string;
     profile: ExtractedResumeProfile;
     summary: string;
     experience: ExtractedExperience[];
@@ -572,7 +569,6 @@ export function extractCvDataFromText(text: string): ExtractedCvData {
 
     const profile: ExtractedResumeProfile = {
         fullName: extractName(lines),
-        headline: inferHeadline(summary, lines),
         email: extractEmail(text),
         phone: extractPhone(text),
         location: extractLocation(lines, text),
@@ -581,12 +577,7 @@ export function extractCvDataFromText(text: string): ExtractedCvData {
         github: extractGithub(text),
     };
 
-    const industry = inferIndustry(skills, summary);
-    const targetRole = inferTargetRole(profile.headline, summary, experience);
-
     return {
-        industry,
-        targetRole,
         profile,
         summary,
         experience,

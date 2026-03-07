@@ -12,8 +12,9 @@
 - TypeScript
 - Tailwind CSS
 - IndexDB with dexie
-- AI SDK
+- Mastra SDK
 - Shadcn UI
+- zod for validation
 
 ## Code Style
 

@@ -12,13 +12,13 @@ const optionalUrl = z
 
 const resumeProfileSchema = z.object({
     fullName: z.string().trim().min(2, "Full name is required"),
-    headline: z.string().trim().min(2, "Headline is required"),
     email: z.email("Please enter a valid email"),
     phone: z.string().trim().min(8, "Phone number is required"),
     location: z.string().trim().min(2, "Location is required"),
     website: optionalUrl,
     linkedin: optionalUrl,
     github: optionalUrl,
+    photo: z.string().optional(),
 });
 
 const workExperienceSchema = z.object({
@@ -75,8 +75,6 @@ const languageSchema = z.object({
 });
 
 export const profileSchema = z.object({
-    industry: z.string().trim().min(2, "Industry is required"),
-    targetRole: z.string().trim().min(2, "Target role is required"),
     profile: resumeProfileSchema,
     summary: z.string().trim().min(10, "Summary is required"),
     experience: z.array(workExperienceSchema).min(1, "Add at least one experience"),
@@ -90,17 +88,15 @@ export const profileSchema = z.object({
 export type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export const defaultProfileFormValues: ProfileFormValues = {
-    industry: "General",
-    targetRole: "",
     profile: {
         fullName: "",
-        headline: "",
         email: "",
         phone: "",
         location: "",
         website: "",
         linkedin: "",
         github: "",
+        photo: "",
     },
     summary: "",
     experience: [

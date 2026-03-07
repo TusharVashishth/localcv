@@ -1,5 +1,7 @@
 "use client";
 
+import { useCallback } from "react";
+
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/lib/db";
 import type { ProfileFormValues } from "../schema/profile-schema";
@@ -9,7 +11,7 @@ export function useProfile() {
     const isLoading = profile === undefined;
     const isProfileCompleted = !!profile;
 
-    async function saveProfile(values: ProfileFormValues) {
+    const saveProfile = useCallback(async (values: ProfileFormValues) => {
         const existing = await db.profiles.toCollection().first();
         const now = new Date();
 
@@ -27,7 +29,7 @@ export function useProfile() {
             ...payload,
             createdAt: now,
         });
-    }
+    }, []);
 
     return { profile, isLoading, isProfileCompleted, saveProfile };
 }

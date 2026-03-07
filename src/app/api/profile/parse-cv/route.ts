@@ -44,21 +44,11 @@ function mergeWithExtracted(
             : {};
 
     return {
-        industry:
-            (typeof parsedCandidate.industry === "string" && parsedCandidate.industry.trim()) ||
-            extracted.industry,
-        targetRole:
-            (typeof parsedCandidate.targetRole === "string" && parsedCandidate.targetRole.trim()) ||
-            extracted.targetRole,
         profile: {
             fullName:
                 (typeof profileCandidate.fullName === "string" && profileCandidate.fullName.trim()) ||
                 extracted.profile.fullName ||
                 "Candidate",
-            headline:
-                (typeof profileCandidate.headline === "string" && profileCandidate.headline.trim()) ||
-                extracted.profile.headline ||
-                extracted.targetRole,
             email:
                 (typeof profileCandidate.email === "string" && profileCandidate.email.trim()) ||
                 extracted.profile.email,

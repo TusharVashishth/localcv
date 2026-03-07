@@ -26,7 +26,7 @@ export function EditorToolbar({ styleConfig, onChange }: EditorToolbarProps) {
           Font
         </span>
         {/* ****** Horizontally scrollable font buttons ****** */}
-        <div className="flex gap-1 overflow-x-auto pb-0.5 max-w-65 lg:max-w-100 scrollbar-thin">
+        <div className="flex gap-1 overflow-x-auto pb-0.5 max-w-65 lg:max-w-100 scrollbar-hide">
           {FONT_OPTIONS.map((opt) => (
             <button
               key={opt.value + opt.fontFamilyValue}

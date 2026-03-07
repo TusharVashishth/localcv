@@ -18,6 +18,7 @@ import {
   FileText,
   FolderOpen,
   GraduationCap,
+  Loader2,
   UploadCloud,
   User,
   Wrench,
@@ -65,8 +66,10 @@ export function ProfileForm() {
   const { config, getDecryptedApiKey } = useAIConfig();
   const [activeTab, setActiveTab] = useState<TabId>("basic");
   const [isParsing, setIsParsing] = useState(false);
+  const [isManualSaving, setIsManualSaving] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const hasLoadedProfile = useRef(false);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema) as never,
@@ -79,10 +82,9 @@ export function ProfileForm() {
   const errors = form.formState.errors;
 
   useEffect(() => {
-    if (!profile) return;
+    if (!profile || hasLoadedProfile.current) return;
+    hasLoadedProfile.current = true;
     form.reset({
-      industry: profile.industry,
-      targetRole: profile.targetRole,
       profile: {
         ...profile.profile,
         website: profile.profile.website ?? "",
@@ -108,6 +110,8 @@ export function ProfileForm() {
       languages: profile.languages,
     });
   }, [form, profile]);
+
+
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -147,12 +151,9 @@ export function ProfileForm() {
       const extracted = data.extracted;
       form.reset({
         ...prev,
-        industry: extracted.industry || prev.industry,
-        targetRole: extracted.targetRole || prev.targetRole,
         profile: {
           ...prev.profile,
           fullName: extracted.profile.fullName || prev.profile.fullName,
-          headline: extracted.profile.headline || prev.profile.headline,
           email: extracted.profile.email || prev.profile.email,
           phone: extracted.profile.phone || prev.profile.phone,
           location: extracted.profile.location || prev.profile.location,
@@ -363,9 +364,9 @@ export function ProfileForm() {
       [key]:
         key === "highlights" || key === "technologies"
           ? value
-              .split("\n")
-              .map((entry) => entry.trim())
-              .filter(Boolean)
+            .split("\n")
+            .map((entry) => entry.trim())
+            .filter(Boolean)
           : value,
     };
     form.setValue("projects", next, {
@@ -494,7 +495,7 @@ export function ProfileForm() {
 
   /* ****** Fields validated per tab step ****** */
   const TAB_FIELDS: Record<TabId, (keyof ProfileFormValues)[]> = {
-    basic: ["industry", "targetRole", "profile"],
+    basic: ["profile"],
     summary: ["summary", "skills"],
     experience: ["experience"],
     education: ["education"],
@@ -507,6 +508,22 @@ export function ProfileForm() {
     const isValid = await form.trigger(fields as never, { shouldFocus: true });
     if (!isValid) return;
     setActiveTab(TABS[currentTabIndex + 1].id);
+  }
+
+  async function handleSaveCurrentTab() {
+    const fields = TAB_FIELDS[activeTab];
+    const isValid = await form.trigger(fields as never, { shouldFocus: true });
+    if (!isValid) return;
+
+    setIsManualSaving(true);
+    try {
+      await saveProfile(form.getValues());
+      toast.success("Tab data saved successfully.");
+    } catch {
+      toast.error("Unable to save. Please try again.");
+    } finally {
+      setIsManualSaving(false);
+    }
   }
 
   return (
@@ -541,11 +558,10 @@ export function ProfileForm() {
             </div>
 
             <div
-              className={`flex flex-1 cursor-pointer items-center gap-3 rounded-lg border-2 border-dashed px-4 py-3 transition-colors ${
-                uploadFile
-                  ? "border-primary/50 bg-primary/5"
-                  : "border-border hover:border-primary/40 hover:bg-accent/50"
-              }`}
+              className={`flex flex-1 cursor-pointer items-center gap-3 rounded-lg border-2 border-dashed px-4 py-3 transition-colors ${uploadFile
+                ? "border-primary/50 bg-primary/5"
+                : "border-border hover:border-primary/40 hover:bg-accent/50"
+                }`}
               onClick={() => fileInputRef.current?.click()}
             >
               <FileText
@@ -635,11 +651,10 @@ export function ProfileForm() {
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-1.5 whitespace-nowrap border-b-2 px-4 py-3 text-sm transition-colors ${
-                    isActive
-                      ? "border-primary font-medium text-primary"
-                      : "border-transparent text-muted-foreground hover:border-border hover:text-foreground"
-                  }`}
+                  className={`flex items-center gap-1.5 whitespace-nowrap border-b-2 px-4 py-3 text-sm transition-colors ${isActive
+                    ? "border-primary font-medium text-primary"
+                    : "border-transparent text-muted-foreground hover:border-border hover:text-foreground"
+                    }`}
                 >
                   <Icon className="size-3.5" />
                   {tab.label}
@@ -669,6 +684,23 @@ export function ProfileForm() {
                 Back
               </Button>
             )}
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={isManualSaving}
+              onClick={handleSaveCurrentTab}
+              className="min-w-[100px]"
+            >
+              {isManualSaving ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save"
+              )}
+            </Button>
             {currentTabIndex < TABS.length - 1 ? (
               /* ****** Next validates current tab fields before advancing ****** */
               <Button type="button" size="sm" onClick={handleNext}>
@@ -677,8 +709,15 @@ export function ProfileForm() {
               </Button>
             ) : (
               /* ****** Save Profile only on the last step ****** */
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving..." : "Save Profile"}
+              <Button type="submit" disabled={form.formState.isSubmitting || isManualSaving}>
+                {form.formState.isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Complete Profile"
+                )}
               </Button>
             )}
           </div>

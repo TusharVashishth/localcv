@@ -11,11 +11,10 @@ import { TechnicalTemplate } from "./technical-template";
 import { SidebarColorTemplate } from "./sidebar-color-template";
 import { PhotoTemplate } from "./photo-template";
 import { CreativeTemplate } from "./creative-template";
+import type { ResumeSectionKey } from "./section-order";
 
 export type ResumeTemplateData = Pick<
     Profile,
-    | "industry"
-    | "targetRole"
     | "profile"
     | "summary"
     | "experience"
@@ -26,21 +25,25 @@ export type ResumeTemplateData = Pick<
     | "languages"
 >;
 
+export interface ResumeTemplateComponentProps {
+    data: ResumeTemplateData;
+    compact?: boolean;
+    styleConfig?: ResumeStyleConfig;
+    sectionOrder?: ResumeSectionKey[];
+}
+
 export interface ResumeTemplate {
     id: string;
     name: string;
     description: string;
     industries: string[];
     defaultAccentColor?: string;
-    component: ComponentType<{ data: ResumeTemplateData; compact?: boolean; styleConfig?: ResumeStyleConfig }>;
+    component: ComponentType<ResumeTemplateComponentProps>;
 }
 
 export const TEMPLATE_PREVIEW_DATA: ResumeTemplateData = {
-    industry: "Technology",
-    targetRole: "Senior Software Engineer",
     profile: {
         fullName: "Alex Morgan",
-        headline: "Backend Engineer · Distributed Systems",
         email: "alex@example.com",
         phone: "+1 (555) 123-4567",
         location: "San Francisco, CA",
@@ -171,3 +174,4 @@ export const RESUME_TEMPLATES: ResumeTemplate[] = [
 
 export * from "./resume-export";
 export * from "./types";
+export * from "./section-order";

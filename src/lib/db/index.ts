@@ -11,20 +11,20 @@ const db = new Dexie("localcv_db") as Dexie & {
 db.version(1).stores({
     aiConfigs: "++id",
     resumes:
-        "++id, title, templateId, industry, targetRole, createdAt, updatedAt, [templateId+updatedAt]",
+        "++id, title, templateId, createdAt, updatedAt, [templateId+updatedAt]",
 });
 
 db.version(2).stores({
     aiConfigs: "++id",
     resumes:
-        "++id, title, templateId, industry, targetRole, createdAt, updatedAt, [templateId+updatedAt]",
+        "++id, title, templateId, createdAt, updatedAt, [templateId+updatedAt]",
     profiles: "++id, isCompleted, updatedAt",
 });
 
 db.version(3)
     .stores({
         aiConfigs: "++id, provider, modelName, updatedAt",
-        profiles: "++id, targetRole, industry, updatedAt",
+        profiles: "++id, updatedAt",
         resumes: null,
     })
     .upgrade(async (tx) => {
@@ -40,8 +40,6 @@ db.version(3)
 
         if (latestResume) {
             const mappedProfile = {
-                industry: latestResume.industry,
-                targetRole: latestResume.targetRole,
                 profile: latestResume.profile,
                 summary: latestResume.summary,
                 experience: latestResume.experience,
@@ -64,11 +62,8 @@ db.version(3)
 
             await profilesTable.clear();
             await profilesTable.add({
-                industry: "General",
-                targetRole: String(legacyProfile.targetRole ?? "Professional"),
                 profile: {
                     fullName: String(legacyProfile.fullName ?? ""),
-                    headline: String(legacyProfile.headline ?? ""),
                     email: String(legacyProfile.email ?? ""),
                     phone: String(legacyProfile.phone ?? ""),
                     location: String(legacyProfile.location ?? ""),
