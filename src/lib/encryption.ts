@@ -1,105 +1,48 @@
-/* ****** Client-side encryption utilities for IndexedDB secrets ****** */
+/* ****** Server-side encryption utilities using Node.js crypto ****** */
 
-const ENCRYPTION_SECRET_STORAGE_KEY = "localcv_encryption_secret_v1";
-const ENCRYPTION_SALT = "localcv-api-key-salt";
+import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from "node:crypto";
 
-function toBase64(bytes: Uint8Array): string {
-    let binary = "";
-    bytes.forEach((byte) => {
-        binary += String.fromCharCode(byte);
-    });
-    return btoa(binary);
-}
+const ALGORITHM = "aes-256-gcm";
 
-function fromBase64(base64: string): Uint8Array {
-    const binary = atob(base64);
-    const bytes = new Uint8Array(binary.length);
-
-    for (let index = 0; index < binary.length; index += 1) {
-        bytes[index] = binary.charCodeAt(index);
+function getEncryptionKey() {
+    const secret = process.env.ENCRYPTION_KEY;
+    const salt = process.env.ENCRYPTION_SALT;
+    
+    if (!secret || !salt) {
+        throw new Error("ENCRYPTION_KEY or ENCRYPTION_SALT is not defined in environment variables");
     }
-
-    return bytes;
-}
-
-function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
-    const buffer = new ArrayBuffer(bytes.byteLength);
-    new Uint8Array(buffer).set(bytes);
-    return buffer;
-}
-
-function getOrCreateSecret(): string {
-    const existing = localStorage.getItem(ENCRYPTION_SECRET_STORAGE_KEY);
-    if (existing) {
-        return existing;
-    }
-
-    const random = crypto.getRandomValues(new Uint8Array(32));
-    const secret = toBase64(random);
-    localStorage.setItem(ENCRYPTION_SECRET_STORAGE_KEY, secret);
-    return secret;
-}
-
-async function getAesKey(): Promise<CryptoKey> {
-    const secret = getOrCreateSecret();
-    const secretBytes = new TextEncoder().encode(secret);
-
-    const keyMaterial = await crypto.subtle.importKey(
-        "raw",
-        secretBytes,
-        "PBKDF2",
-        false,
-        ["deriveKey"],
-    );
-
-    return crypto.subtle.deriveKey(
-        {
-            name: "PBKDF2",
-            salt: new TextEncoder().encode(ENCRYPTION_SALT),
-            iterations: 100000,
-            hash: "SHA-256",
-        },
-        keyMaterial,
-        {
-            name: "AES-GCM",
-            length: 256,
-        },
-        false,
-        ["encrypt", "decrypt"],
-    );
+    
+    // Using scrypt to derive a 32-byte key from the secret and salt
+    const key = scryptSync(secret, salt, 32);
+    return key;
 }
 
 export async function encryptSecret(plainText: string): Promise<string> {
-    const key = await getAesKey();
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const ivBuffer = toArrayBuffer(iv);
-    const encodedText = new TextEncoder().encode(plainText);
+    const key = getEncryptionKey();
+    const iv = randomBytes(12);
+    const cipher = createCipheriv(ALGORITHM, key, iv);
 
-    const encrypted = await crypto.subtle.encrypt(
-        { name: "AES-GCM", iv: ivBuffer },
-        key,
-        encodedText,
-    );
+    const encrypted = Buffer.concat([cipher.update(plainText, "utf8"), cipher.final()]);
+    const authTag = cipher.getAuthTag();
 
-    return `${toBase64(iv)}.${toBase64(new Uint8Array(encrypted))}`;
+    // Store as iv.authTag.encrypted payload
+    return `${iv.toString("base64")}.${authTag.toString("base64")}.${encrypted.toString("base64")}`;
 }
 
 export async function decryptSecret(cipherText: string): Promise<string> {
-    const [ivBase64, encryptedBase64] = cipherText.split(".");
-    if (!ivBase64 || !encryptedBase64) {
-        throw new Error("Invalid encrypted value");
+    const [ivBase64, authTagBase64, encryptedBase64] = cipherText.split(".");
+    if (!ivBase64 || !authTagBase64 || !encryptedBase64) {
+        throw new Error("Invalid encrypted value format");
     }
 
-    const key = await getAesKey();
-    const iv = fromBase64(ivBase64);
-    const ivBuffer = toArrayBuffer(iv);
-    const encrypted = toArrayBuffer(fromBase64(encryptedBase64));
+    const key = getEncryptionKey();
+    const iv = Buffer.from(ivBase64, "base64");
+    const authTag = Buffer.from(authTagBase64, "base64");
+    const encrypted = Buffer.from(encryptedBase64, "base64");
 
-    const decrypted = await crypto.subtle.decrypt(
-        { name: "AES-GCM", iv: ivBuffer },
-        key,
-        encrypted,
-    );
+    const decipher = createDecipheriv(ALGORITHM, key, iv);
+    decipher.setAuthTag(authTag);
 
-    return new TextDecoder().decode(decrypted);
+    const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+    return decrypted.toString("utf8");
 }

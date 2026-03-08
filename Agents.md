@@ -38,6 +38,7 @@
   - `lib/`: Utility functions and libraries.
   - `globals.css`: Global styles using Tailwind CSS.
   - `app/api/`: API routes for server-side logic.
+  - `mastra/`: Mastra agents and workflows.
 
 ### Code Best Practices
 

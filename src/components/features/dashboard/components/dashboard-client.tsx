@@ -4,8 +4,10 @@
 
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { createLocalDataExport } from "@/lib/db/import-export";
 import {
   FileText,
   Target,
@@ -14,12 +16,15 @@ import {
   Sparkles,
   UserCheck,
   Download,
+  Upload,
+  Database,
   ArrowRight,
   CheckCircle2,
   Lock,
   Zap,
 } from "lucide-react";
 import { ApiKeyDialog } from "./api-key-dialog";
+import { ImportDataDialog } from "./import-data-dialog";
 import { useAIConfig } from "../hooks/use-ai-config";
 import { useProfile } from "@/components/features/profile/hooks/use-profile";
 
@@ -88,6 +93,8 @@ export function DashboardClient() {
   const { hasApiKey, saveConfig } = useAIConfig();
   const { isProfileCompleted } = useProfile();
   const [isApiDialogOpen, setIsApiDialogOpen] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const handleSaveConfig = useCallback(
     async (provider: string, modelName: string, apiKey: string) => {
@@ -122,12 +129,40 @@ export function DashboardClient() {
     return stepIndex === 0 && isProfileCompleted;
   }
 
+  const handleExportData = useCallback(async () => {
+    try {
+      setIsExporting(true);
+
+      const payload = await createLocalDataExport();
+      const json = JSON.stringify(payload, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const anchor = document.createElement("a");
+      const dateToken = new Date().toISOString().replace(/[:.]/g, "-");
+      anchor.href = url;
+      anchor.download = `localcv-backup-${dateToken}.json`;
+      anchor.click();
+
+      URL.revokeObjectURL(url);
+      toast.success("Local data exported as JSON.");
+    } catch {
+      toast.error("Unable to export local data.");
+    } finally {
+      setIsExporting(false);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <ApiKeyDialog
         open={isApiDialogOpen}
         onOpenChange={setIsApiDialogOpen}
         onSave={handleSaveConfig}
+      />
+      <ImportDataDialog
+        open={isImportDialogOpen}
+        onOpenChange={setIsImportDialogOpen}
       />
 
       <main className="container mx-auto px-6 py-8 space-y-10">
@@ -177,6 +212,42 @@ export function DashboardClient() {
             )}
           </div>
         </div>
+
+        <section className="rounded-xl border bg-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="flex items-center justify-center size-9 rounded-lg bg-primary/10 text-primary shrink-0">
+              <Database className="size-4" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold">Backup Your Local Data</p>
+              <p className="text-xs text-muted-foreground">
+                Export your local profile and AI settings to JSON, or import a
+                previous backup.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5"
+              onClick={() => setIsImportDialogOpen(true)}
+            >
+              <Upload className="size-3.5" />
+              Import JSON
+            </Button>
+            <Button
+              size="sm"
+              className="gap-1.5"
+              onClick={handleExportData}
+              disabled={isExporting}
+            >
+              <Download className="size-3.5" />
+              {isExporting ? "Exporting..." : "Export JSON"}
+            </Button>
+          </div>
+        </section>
 
         {/* ****** 3-step cards ****** */}
         <section>

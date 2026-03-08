@@ -1,4 +1,6 @@
 import type { FieldErrors } from "react-hook-form";
+import { Bot, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +16,9 @@ export function ProfileSummarySkillsSection({
   formValues,
   setRootField,
   errors,
+  onEnhanceSummary,
+  isEnhancingSummary,
+  canUseAI,
 }: {
   formValues: ProfileFormValues;
   setRootField: <K extends keyof ProfileFormValues>(
@@ -21,6 +26,9 @@ export function ProfileSummarySkillsSection({
     value: ProfileFormValues[K],
   ) => void;
   errors: FieldErrors<ProfileFormValues>;
+  onEnhanceSummary: () => void;
+  isEnhancingSummary: boolean;
+  canUseAI: boolean;
 }) {
   const summaryError = errorText(errors.summary?.message);
   const skillsError = errorText(errors.skills?.message);
@@ -31,6 +39,28 @@ export function ProfileSummarySkillsSection({
         <ProfileSectionHeader
           title="Professional Summary"
           description="A 2-4 sentence overview of your profile."
+          action={
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onEnhanceSummary}
+              disabled={isEnhancingSummary || !canUseAI}
+              className="gap-1.5"
+            >
+              {isEnhancingSummary ? (
+                <>
+                  <Loader2 className="size-3.5 animate-spin" />
+                  Enhancing...
+                </>
+              ) : (
+                <>
+                  <Bot className="size-3.5" />
+                  Enhance with AI
+                </>
+              )}
+            </Button>
+          }
         />
         <div className="space-y-1.5">
           <Label htmlFor="summary">Summary</Label>

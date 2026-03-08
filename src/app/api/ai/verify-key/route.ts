@@ -28,18 +28,14 @@ export async function POST(request: Request) {
         const verifierAgent = new Agent({
             id: "api-key-verifier",
             name: "API Key Verifier",
-            instructions: "Reply with OK only.",
+            instructions: "You are a helpful assistant.",
             model: {
                 id: `${provider}/${modelName}`,
                 apiKey,
             },
         });
 
-        await verifierAgent.generate("Verify key", {
-            modelSettings: {
-                maxOutputTokens: 5,
-            },
-        });
+        await verifierAgent.generate("Hey what's up?",);
 
         return NextResponse.json({ success: true });
     } catch (error) {

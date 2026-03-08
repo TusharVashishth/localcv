@@ -1,5 +1,5 @@
 import type { FieldErrors } from "react-hook-form";
-import { Plus, Trash2 } from "lucide-react";
+import { Bot, Loader2, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,12 +18,18 @@ export function ProfileExperienceSection({
   removeExperience,
   updateExperience,
   errors,
+  onRefineExperience,
+  isRefiningExperience,
+  canUseAI,
 }: {
   formValues: ProfileFormValues;
   addExperience: () => void;
   removeExperience: (index: number) => void;
   updateExperience: (index: number, key: string, value: string) => void;
   errors: FieldErrors<ProfileFormValues>;
+  onRefineExperience: () => void;
+  isRefiningExperience: boolean;
+  canUseAI: boolean;
 }) {
   const experienceListError = errorText(errors.experience?.message);
 
@@ -33,15 +39,41 @@ export function ProfileExperienceSection({
         title="Work Experience"
         description="List your roles from most recent to oldest."
         action={
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={addExperience}
-          >
-            <Plus className="size-4" />
-            Add Experience
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onRefineExperience}
+              disabled={
+                isRefiningExperience ||
+                !canUseAI ||
+                formValues.experience.length === 0
+              }
+              className="gap-1.5"
+            >
+              {isRefiningExperience ? (
+                <>
+                  <Loader2 className="size-3.5 animate-spin" />
+                  Refining...
+                </>
+              ) : (
+                <>
+                  <Bot className="size-3.5" />
+                  Refine with AI
+                </>
+              )}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={addExperience}
+            >
+              <Plus className="size-4" />
+              Add Experience
+            </Button>
+          </div>
         }
       />
       {experienceListError && (

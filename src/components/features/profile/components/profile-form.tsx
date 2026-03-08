@@ -67,6 +67,9 @@ export function ProfileForm() {
   const [activeTab, setActiveTab] = useState<TabId>("basic");
   const [isParsing, setIsParsing] = useState(false);
   const [isManualSaving, setIsManualSaving] = useState(false);
+  const [isSummaryGenerating, setIsSummaryGenerating] = useState(false);
+  const [isExperienceGenerating, setIsExperienceGenerating] = useState(false);
+  const [isProjectsGenerating, setIsProjectsGenerating] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const hasLoadedProfile = useRef(false);
@@ -80,6 +83,7 @@ export function ProfileForm() {
 
   const formValues = form.watch();
   const errors = form.formState.errors;
+  const canUseProfileAI = !!config?.provider && !!config?.modelName;
 
   useEffect(() => {
     if (!profile || hasLoadedProfile.current) return;
@@ -110,8 +114,6 @@ export function ProfileForm() {
       languages: profile.languages,
     });
   }, [form, profile]);
-
-
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -229,6 +231,144 @@ export function ProfileForm() {
       toast.error("Unable to parse CV. Please try again.");
     } finally {
       setIsParsing(false);
+    }
+  }
+
+  async function getAIConfigForRequest() {
+    if (!config?.provider || !config?.modelName) {
+      throw new Error("AI configuration not found in aiConfig table.");
+    }
+
+    const apiKey = await getDecryptedApiKey();
+    if (!apiKey) {
+      throw new Error("API key not found. Configure it from the dashboard.");
+    }
+
+    return {
+      provider: config.provider,
+      modelName: config.modelName,
+      apiKey,
+    };
+  }
+
+  async function handleEnhanceSummary() {
+    if (!formValues.summary.trim()) {
+      toast.error("Add a summary first before enhancing with AI.");
+      return;
+    }
+
+    try {
+      setIsSummaryGenerating(true);
+      const runtimeConfig = await getAIConfigForRequest();
+      const response = await fetch("/api/profile/refine-section", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          section: "summary",
+          config: runtimeConfig,
+          summary: formValues.summary,
+          skills: formValues.skills,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        toast.error(data.error ?? "Unable to enhance summary.");
+        return;
+      }
+
+      setRootField("summary", data.refined.summary ?? formValues.summary);
+      toast.success("Summary enhanced with AI.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to enhance summary.",
+      );
+    } finally {
+      setIsSummaryGenerating(false);
+    }
+  }
+
+  async function handleRefineExperienceSection() {
+    if (formValues.experience.length === 0) {
+      toast.error("Add at least one experience entry first.");
+      return;
+    }
+
+    try {
+      setIsExperienceGenerating(true);
+      const runtimeConfig = await getAIConfigForRequest();
+      const response = await fetch("/api/profile/refine-section", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          section: "experience",
+          config: runtimeConfig,
+          experience: formValues.experience,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        toast.error(data.error ?? "Unable to refine experience.");
+        return;
+      }
+
+      form.setValue(
+        "experience",
+        data.refined.experience ?? formValues.experience,
+        {
+          shouldDirty: true,
+          shouldTouch: true,
+          shouldValidate: true,
+        },
+      );
+      toast.success("Experience section refined with AI.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to refine experience.",
+      );
+    } finally {
+      setIsExperienceGenerating(false);
+    }
+  }
+
+  async function handleRefineProjectsSection() {
+    if (formValues.projects.length === 0) {
+      toast.error("Add at least one project first.");
+      return;
+    }
+
+    try {
+      setIsProjectsGenerating(true);
+      const runtimeConfig = await getAIConfigForRequest();
+      const response = await fetch("/api/profile/refine-section", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          section: "projects",
+          config: runtimeConfig,
+          projects: formValues.projects,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        toast.error(data.error ?? "Unable to refine projects.");
+        return;
+      }
+
+      form.setValue("projects", data.refined.projects ?? formValues.projects, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
+      toast.success("Projects section refined with AI.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to refine projects.",
+      );
+    } finally {
+      setIsProjectsGenerating(false);
     }
   }
 
@@ -364,9 +504,9 @@ export function ProfileForm() {
       [key]:
         key === "highlights" || key === "technologies"
           ? value
-            .split("\n")
-            .map((entry) => entry.trim())
-            .filter(Boolean)
+              .split("\n")
+              .map((entry) => entry.trim())
+              .filter(Boolean)
           : value,
     };
     form.setValue("projects", next, {
@@ -448,6 +588,9 @@ export function ProfileForm() {
         formValues={formValues}
         setRootField={setRootField}
         errors={errors}
+        onEnhanceSummary={handleEnhanceSummary}
+        isEnhancingSummary={isSummaryGenerating}
+        canUseAI={canUseProfileAI}
       />
     ),
     experience: (
@@ -457,6 +600,9 @@ export function ProfileForm() {
         removeExperience={removeExperience}
         updateExperience={updateExperience}
         errors={errors}
+        onRefineExperience={handleRefineExperienceSection}
+        isRefiningExperience={isExperienceGenerating}
+        canUseAI={canUseProfileAI}
       />
     ),
     education: (
@@ -475,6 +621,9 @@ export function ProfileForm() {
         removeProject={removeProject}
         updateProject={updateProject}
         errors={errors}
+        onRefineProjects={handleRefineProjectsSection}
+        isRefiningProjects={isProjectsGenerating}
+        canUseAI={canUseProfileAI}
       />
     ),
     extra: (
@@ -558,10 +707,11 @@ export function ProfileForm() {
             </div>
 
             <div
-              className={`flex flex-1 cursor-pointer items-center gap-3 rounded-lg border-2 border-dashed px-4 py-3 transition-colors ${uploadFile
-                ? "border-primary/50 bg-primary/5"
-                : "border-border hover:border-primary/40 hover:bg-accent/50"
-                }`}
+              className={`flex flex-1 cursor-pointer items-center gap-3 rounded-lg border-2 border-dashed px-4 py-3 transition-colors ${
+                uploadFile
+                  ? "border-primary/50 bg-primary/5"
+                  : "border-border hover:border-primary/40 hover:bg-accent/50"
+              }`}
               onClick={() => fileInputRef.current?.click()}
             >
               <FileText
@@ -651,10 +801,11 @@ export function ProfileForm() {
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-1.5 whitespace-nowrap border-b-2 px-4 py-3 text-sm transition-colors ${isActive
-                    ? "border-primary font-medium text-primary"
-                    : "border-transparent text-muted-foreground hover:border-border hover:text-foreground"
-                    }`}
+                  className={`flex items-center gap-1.5 whitespace-nowrap border-b-2 px-4 py-3 text-sm transition-colors ${
+                    isActive
+                      ? "border-primary font-medium text-primary"
+                      : "border-transparent text-muted-foreground hover:border-border hover:text-foreground"
+                  }`}
                 >
                   <Icon className="size-3.5" />
                   {tab.label}
@@ -709,7 +860,10 @@ export function ProfileForm() {
               </Button>
             ) : (
               /* ****** Save Profile only on the last step ****** */
-              <Button type="submit" disabled={form.formState.isSubmitting || isManualSaving}>
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting || isManualSaving}
+              >
                 {form.formState.isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 size-4 animate-spin" />

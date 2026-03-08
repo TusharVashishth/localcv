@@ -1,5 +1,5 @@
 import type { FieldErrors } from "react-hook-form";
-import { Plus, Trash2 } from "lucide-react";
+import { Bot, Loader2, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,12 +18,18 @@ export function ProfileProjectsSection({
   removeProject,
   updateProject,
   errors,
+  onRefineProjects,
+  isRefiningProjects,
+  canUseAI,
 }: {
   formValues: ProfileFormValues;
   addProject: () => void;
   removeProject: (index: number) => void;
   updateProject: (index: number, key: string, value: string) => void;
   errors: FieldErrors<ProfileFormValues>;
+  onRefineProjects: () => void;
+  isRefiningProjects: boolean;
+  canUseAI: boolean;
 }) {
   const projectsListError = errorText(errors.projects?.message);
 
@@ -33,15 +39,41 @@ export function ProfileProjectsSection({
         title="Projects"
         description="Showcase your best work."
         action={
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={addProject}
-          >
-            <Plus className="size-4" />
-            Add Project
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onRefineProjects}
+              disabled={
+                isRefiningProjects ||
+                !canUseAI ||
+                formValues.projects.length === 0
+              }
+              className="gap-1.5"
+            >
+              {isRefiningProjects ? (
+                <>
+                  <Loader2 className="size-3.5 animate-spin" />
+                  Refining...
+                </>
+              ) : (
+                <>
+                  <Bot className="size-3.5" />
+                  Refine with AI
+                </>
+              )}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={addProject}
+            >
+              <Plus className="size-4" />
+              Add Project
+            </Button>
+          </div>
         }
       />
       {projectsListError && (
