@@ -34,7 +34,7 @@ export function HeroSection() {
           className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
         >
           Build ATS-Ready Resume With{" "}
-          <SparklesText className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
+          <SparklesText className="text-primary text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
             Local CV
           </SparklesText>
         </motion.h1>

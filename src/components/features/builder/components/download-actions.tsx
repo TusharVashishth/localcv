@@ -109,7 +109,11 @@ export function DownloadActions({
 
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-      <Button className="gap-2 sm:flex-1" onClick={handleDownloadPdf}>
+      <Button
+        variant="outline"
+        className="gap-2 sm:flex-1"
+        onClick={handleDownloadPdf}
+      >
         <Download className="size-4" />
         Download (.pdf)
       </Button>

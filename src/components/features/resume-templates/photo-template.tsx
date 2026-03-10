@@ -94,8 +94,19 @@ export function PhotoTemplate({
 }: PhotoTemplateProps) {
   const accentColor = styleConfig?.accentColor ?? "#2563eb";
   const fontFamily = styleConfig?.fontFamily ?? "font-sans";
-  const contentTextSize = compact ? "text-[9px]" : "text-xs";
-  const headingTextSize = compact ? "text-[9px]" : "text-[11px]";
+  /* ****** Apply fontSize from styleConfig ****** */
+  const fsMap = { small: "text-[10px]", medium: "text-xs", large: "text-sm" };
+  const fsHeadingMap = {
+    small: "text-[10px]",
+    medium: "text-[11px]",
+    large: "text-xs",
+  };
+  const contentTextSize = compact
+    ? "text-[9px]"
+    : fsMap[styleConfig?.fontSize ?? "medium"];
+  const headingTextSize = compact
+    ? "text-[9px]"
+    : fsHeadingMap[styleConfig?.fontSize ?? "medium"];
 
   const initials = data.profile.fullName
     .split(" ")

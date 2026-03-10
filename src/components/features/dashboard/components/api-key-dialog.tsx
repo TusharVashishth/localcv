@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -31,12 +31,18 @@ interface ApiKeyDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSave: (provider: string, modelId: string, apiKey: string) => Promise<void>;
+  initialProvider?: string;
+  initialModel?: string;
+  initialApiKey?: string;
 }
 
 export function ApiKeyDialog({
   open,
   onOpenChange,
   onSave,
+  initialProvider,
+  initialModel,
+  initialApiKey,
 }: ApiKeyDialogProps) {
   const { providers, isLoading: modelsLoading } = useModels();
   const [selectedProvider, setSelectedProvider] = useState("");
@@ -46,6 +52,49 @@ export function ApiKeyDialog({
   const [apiKey, setApiKey] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [showKey, setShowKey] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      if (initialProvider) {
+        setSelectedProvider(initialProvider);
+        const name = providers.find((p) => p.id === initialProvider)?.name ?? initialProvider;
+        setProviderSearch(name);
+      } else {
+        setSelectedProvider("");
+        setProviderSearch("");
+      }
+
+      if (initialModel) {
+        setSelectedModel(initialModel);
+        // Try to derive a friendly name for the model from providers, fall back to id
+        const providerObjLocal = providers.find((p) => p.id === initialProvider);
+        const modelNameFromProvider = providerObjLocal && providerObjLocal.models && providerObjLocal.models[initialModel]
+          ? (typeof (providerObjLocal.models as any)[initialModel] === "string"
+              ? initialModel
+              : ((providerObjLocal.models as any)[initialModel].name ?? initialModel))
+          : initialModel;
+        setModelSearch(modelNameFromProvider ?? initialModel);
+      } else {
+        setSelectedModel("");
+        setModelSearch("");
+      }
+
+      if (initialApiKey) {
+        setApiKey(initialApiKey);
+      } else {
+        setApiKey("");
+      }
+    } else {
+      // Clear transient state when dialog closes
+      setIsSaving(false);
+      setSelectedProvider("");
+      setProviderSearch("");
+      setSelectedModel("");
+      setModelSearch("");
+      setApiKey("");
+      setShowKey(false);
+    }
+  }, [open, initialProvider, initialModel, initialApiKey, providers]);
 
   // Filter providers by search
   const filteredProviders = useMemo(() => {

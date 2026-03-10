@@ -841,7 +841,7 @@ export function ProfileForm() {
               size="sm"
               disabled={isManualSaving}
               onClick={handleSaveCurrentTab}
-              className="min-w-[100px]"
+              className="min-w-25"
             >
               {isManualSaving ? (
                 <>

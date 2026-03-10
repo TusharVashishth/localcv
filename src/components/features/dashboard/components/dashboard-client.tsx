@@ -90,11 +90,14 @@ const COMING_SOON = [
 
 export function DashboardClient() {
   const router = useRouter();
-  const { hasApiKey, saveConfig } = useAIConfig();
+  const { config, hasApiKey, saveConfig, getDecryptedApiKey } = useAIConfig();
   const { isProfileCompleted } = useProfile();
   const [isApiDialogOpen, setIsApiDialogOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [initialProvider, setInitialProvider] = useState("");
+  const [initialModel, setInitialModel] = useState("");
+  const [initialApiKey, setInitialApiKey] = useState("");
 
   const handleSaveConfig = useCallback(
     async (provider: string, modelName: string, apiKey: string) => {
@@ -102,6 +105,27 @@ export function DashboardClient() {
     },
     [saveConfig],
   );
+
+  const openApiDialog = useCallback(async () => {
+    if (hasApiKey && config) {
+      try {
+        const key = await getDecryptedApiKey();
+        setInitialProvider(config.provider ?? "");
+        setInitialModel(config.modelName ?? "");
+        setInitialApiKey(key ?? "");
+      } catch {
+        setInitialProvider(config.provider ?? "");
+        setInitialModel(config.modelName ?? "");
+        setInitialApiKey("");
+      }
+    } else {
+      setInitialProvider("");
+      setInitialModel("");
+      setInitialApiKey("");
+    }
+
+    setIsApiDialogOpen(true);
+  }, [hasApiKey, config, getDecryptedApiKey]);
 
   function handleStepClick(stepIndex: number) {
     if (stepIndex === 0) router.push("/dashboard/profile");
@@ -159,6 +183,9 @@ export function DashboardClient() {
         open={isApiDialogOpen}
         onOpenChange={setIsApiDialogOpen}
         onSave={handleSaveConfig}
+        initialProvider={initialProvider}
+        initialModel={initialModel}
+        initialApiKey={initialApiKey}
       />
       <ImportDataDialog
         open={isImportDialogOpen}
@@ -178,10 +205,20 @@ export function DashboardClient() {
                   Build your perfect resume
                 </span>
                 {hasApiKey && (
-                  <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 text-[10px] gap-1">
-                    <Sparkles className="size-2.5" />
-                    AI Ready
-                  </Badge>
+                  <>
+                    <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 text-[10px] gap-1">
+                      <Sparkles className="size-2.5" />
+                      AI Ready
+                    </Badge>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="ml-2 h-7 text-xs px-3"
+                      onClick={openApiDialog}
+                    >
+                      Manage Key
+                    </Button>
+                  </>
                 )}
               </div>
               <p className="text-sm text-muted-foreground max-w-md">
@@ -203,7 +240,7 @@ export function DashboardClient() {
                 </div>
                 <Button
                   size="sm"
-                  onClick={() => setIsApiDialogOpen(true)}
+                  onClick={openApiDialog}
                   className="ml-2 shrink-0 bg-amber-500 hover:bg-amber-600 text-white h-7 text-xs px-3"
                 >
                   Add Key

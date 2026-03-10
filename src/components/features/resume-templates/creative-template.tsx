@@ -45,7 +45,7 @@ function ContactDetailsList({
   className: string;
 }) {
   return (
-    <>
+    <div className="flex space-x-4">
       {data.profile.email && (
         <p className={className}>
           <a href={`mailto:${data.profile.email}`} className="hover:underline">
@@ -72,7 +72,7 @@ function ContactDetailsList({
           <ContactLink url={data.profile.github} label="GitHub" />
         </p>
       )}
-    </>
+    </div>
   );
 }
 
@@ -123,7 +123,11 @@ export function CreativeTemplate({
 }: CreativeTemplateProps) {
   const accentColor = styleConfig?.accentColor ?? "#0d9488";
   const fontFamily = styleConfig?.fontFamily ?? "font-sans";
-  const contentTextSize = compact ? "text-[9px]" : "text-xs";
+  /* ****** Apply fontSize from styleConfig ****** */
+  const fsMap = { small: "text-[10px]", medium: "text-xs", large: "text-sm" };
+  const contentTextSize = compact
+    ? "text-[9px]"
+    : fsMap[styleConfig?.fontSize ?? "medium"];
 
   const orderedSections = getRenderableSectionOrder(data, sectionOrder);
   const leftSections = orderedSections.slice(
@@ -281,8 +285,7 @@ export function CreativeTemplate({
                       : "text-[10px] px-2 py-0.5 rounded-full"
                   }
                   style={{
-                    backgroundColor:
-                      i % 2 === 0 ? accentColor : `${accentColor}80`,
+                    backgroundColor: accentColor,
                     color: "#ffffff",
                   }}
                 >
@@ -388,7 +391,7 @@ export function CreativeTemplate({
       style={{ fontFamily: styleConfig?.fontFamilyValue }}
     >
       <header className={compact ? "px-3 pt-3 pb-2" : "pb-5"}>
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-2">
           <div className="flex-1">
             <h1
               className={
@@ -405,12 +408,15 @@ export function CreativeTemplate({
           <div
             className={
               compact
-                ? "text-[8px] space-y-0.5 p-1.5 rounded text-right"
-                : "text-[10px] space-y-1 p-3 rounded-md text-right"
+                ? "text-[8px] space-y-0.5 p-1.5 rounded "
+                : "text-[10px] space-y-1 p-3 rounded-md "
             }
             style={{ backgroundColor: `${accentColor}15` }}
           >
-            <ContactDetailsList data={data} className="text-muted-foreground" />
+            <ContactDetailsList
+              data={data}
+              className="text-muted-foreground text-xs"
+            />
           </div>
         </div>
 
