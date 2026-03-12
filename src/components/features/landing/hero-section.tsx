@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { FileStack } from "lucide-react";
+import { FileStack, Github } from "lucide-react";
 import Link from "next/link";
 import { SparklesText } from "@/components/ui/sparkles-text";
 import { TextHighlighter } from "@/components/ui/text-highlighter";
@@ -24,7 +24,7 @@ export function HeroSection() {
             className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 bg-muted/80 dark:bg-muted/60"
           >
             <FileStack className="h-3.5 w-3.5" />
-            Your privacy-first resume builder
+            Open source, privacy-first resume builder
           </Badge>
         </motion.div>
         <motion.h1
@@ -33,7 +33,7 @@ export function HeroSection() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
         >
-          Build ATS-Ready Resume With{" "}
+          Build ATS-Ready Resumes With{" "}
           <SparklesText className="text-primary text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
             Local CV
           </SparklesText>
@@ -44,24 +44,25 @@ export function HeroSection() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="max-w-3xl text-base text-muted-foreground sm:text-lg"
         >
-          Craft your perfect resume{" "}
+          The open source way to craft a standout resume{" "}
           <TextHighlighter color="yellow" animated={false}>
             completely free
           </TextHighlighter>
           , with{" "}
           <TextHighlighter color="blue" animated={false}>
-            no signup or credit card required
+            no signup and no paywall
           </TextHighlighter>
-          . Your data stays on your device, and choose from{" "}
+          . Your data stays on your device while you build with{" "}
           <TextHighlighter color="green" animated={false}>
-            optimized templates
+            ATS-ready templates
           </TextHighlighter>{" "}
-          tailored for ATS success.
+          and AI-powered refinements that help every application hit harder.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
+          className="flex flex-col items-center gap-3 sm:flex-row"
         >
           <Link
             href="/dashboard"
@@ -71,6 +72,18 @@ export function HeroSection() {
             )}
           >
             Build Your Resume
+          </Link>
+          <Link
+            href="https://github.com/TusharVashishth/localcv"
+            target="_blank"
+            rel="noreferrer"
+            className={cn(
+              buttonVariants({ variant: "outline", size: "lg" }),
+              "rounded-xl px-8 text-base font-semibold transition-transform hover:scale-105",
+            )}
+          >
+            <Github className="size-4" />
+            Check Out The Repo
           </Link>
         </motion.div>
       </div>

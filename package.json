@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "test:e2e": "start-server-and-test \"next dev\" http://127.0.0.1:3000 \"cypress run\""
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.50",
@@ -43,10 +46,12 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cypress": "^15.11.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "mastra": "^1.3.5",
     "shadcn": "^3.8.5",
+    "start-server-and-test": "^2.1.5",
     "tailwindcss": "^4",
     "typescript": "^5",
     "unpdf": "^1.4.0"

@@ -1,4 +1,13 @@
 import { ProfileForm } from "@/components/features/profile/components/profile-form";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata = buildPageMetadata({
+  title: "Profile",
+  description:
+    "Add your personal details, experience, and skills once, then reuse them across all resume templates.",
+  path: "/dashboard/profile",
+  keywords: ["resume profile", "skills profile", "CV data"],
+});
 
 export default function ProfilePage() {
   return (

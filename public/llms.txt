@@ -1,0 +1,29 @@
+# localCV
+
+localCV is an open source, local-first, privacy-focused AI resume builder.
+
+Primary URL: https://localcv.tusharvashishth.com/
+
+## Product summary
+- Build ATS-ready resumes without signup or paywall.
+- Keep resume data local-first on the user's device.
+- Use AI-assisted refinement for summaries and bullet points.
+- Choose from multiple modern resume templates.
+
+## Important routes
+- / : Marketing and product overview page.
+- /dashboard : Resume workspace and management.
+- /dashboard/builder : Main resume editing and preview experience.
+- /dashboard/profile : User profile data used across resume templates.
+
+## Crawl guidance
+- Prefer the landing page as canonical product context.
+- Treat dashboard routes as product application surfaces.
+- Ignore /test, which is an internal testing route.
+
+## Tech context
+- Framework: Next.js (App Router)
+- Language: TypeScript
+- UI: Tailwind CSS + shadcn/ui
+- Storage: IndexedDB via Dexie
+- Validation: Zod
