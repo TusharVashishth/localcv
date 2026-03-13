@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/shared/theme-provider";
 import { Toaster } from "sonner";
 import { buildRootMetadata } from "@/lib/seo";
 import "./globals.css";
+import MicrosoftClarity from "@/components/shared/microsoft-clarity";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -33,6 +34,7 @@ export default function RootLayout({
           {children}
           <Toaster richColors position="top-right" />
         </ThemeProvider>
+        <MicrosoftClarity />
       </body>
     </html>
   );
