@@ -43,24 +43,13 @@ const STEPS = [
   },
   {
     step: "02",
-    title: "Pick Template",
+    title: "Pick Template & Build Resume",
     description: "Choose from Classic, Modern, Technical, Executive and more.",
     icon: FileText,
     gradient: "from-violet-500/15 via-purple-500/10 to-transparent",
     borderColor: "border-violet-200/60 dark:border-violet-800/40",
     iconGradient: "from-violet-500 to-purple-500",
     textAccent: "text-violet-600 dark:text-violet-400",
-  },
-  {
-    step: "03",
-    title: "Download",
-    description:
-      "Export your resume as HTML or Markdown — print-ready and ATS-friendly.",
-    icon: Download,
-    gradient: "from-orange-500/15 via-amber-500/10 to-transparent",
-    borderColor: "border-orange-200/60 dark:border-orange-800/40",
-    iconGradient: "from-orange-500 to-amber-500",
-    textAccent: "text-orange-600 dark:text-orange-400",
   },
 ] as const;
 
@@ -344,32 +333,6 @@ export function DashboardClient() {
             })}
           </div>
         </section>
-
-        {/* ****** Profile complete CTA ****** */}
-        {isProfileCompleted && (
-          <section className="rounded-xl border bg-linear-to-r from-primary/5 to-violet-500/5 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="flex items-center justify-center size-9 rounded-lg bg-linear-to-br from-primary to-violet-500 text-white shrink-0">
-                <Zap className="size-4" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold">Profile complete!</p>
-                <p className="text-xs text-muted-foreground">
-                  You&apos;re all set — pick a template and generate your
-                  resume.
-                </p>
-              </div>
-            </div>
-            <Button
-              size="sm"
-              className="shrink-0 bg-linear-to-r from-primary to-violet-600 hover:from-primary/90 hover:to-violet-600/90 gap-1.5"
-              onClick={() => router.push("/dashboard/builder")}
-            >
-              <FileText className="size-3.5" />
-              Open Builder
-            </Button>
-          </section>
-        )}
 
         {/* ****** Coming soon ****** */}
         <section>

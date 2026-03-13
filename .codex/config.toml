@@ -1,19 +1,18 @@
-# MCP servers (synchronized from .vscode/mcp.json)
+# Project-scoped MCP server config synchronized from mcp.json
 
-[servers.next-devtools]
+[mcp_servers.next-devtools]
 command = "npx"
 args = ["-y", "next-devtools-mcp@latest"]
 
-[servers."@magicuidesign/mcp"]
+[mcp_servers."magicuidesign/mcp"]
 command = "npx"
 args = ["-y", "@magicuidesign/mcp@latest"]
 
-[servers.shadcn]
+[mcp_servers.shadcn]
 command = "npx"
 args = ["shadcn@latest", "mcp"]
 
-[servers.mastra]
+[mcp_servers.mastra]
 type = "stdio"
 command = "npx"
 args = ["-y", "@mastra/mcp-docs-server@latest"]
-

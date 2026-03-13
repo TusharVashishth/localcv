@@ -189,51 +189,6 @@ export function ProfileForm() {
     }
   }
 
-  async function handleParseWithAI() {
-    if (!uploadFile) {
-      toast.error("Upload a PDF first.");
-      return;
-    }
-    if (!config?.provider || !config?.modelName) {
-      toast.error("Configure AI provider and model first.");
-      return;
-    }
-
-    try {
-      setIsParsing(true);
-      const apiKey = await getDecryptedApiKey();
-      if (!apiKey) {
-        toast.error("API key not found. Configure it from the dashboard.");
-        return;
-      }
-
-      const fileDataUrl = await fileToDataUrl(uploadFile);
-      const response = await fetch("/api/profile/parse-cv", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          provider: config.provider,
-          modelName: config.modelName,
-          apiKey,
-          fileName: uploadFile.name,
-          fileDataUrl,
-        }),
-      });
-      const data = await response.json();
-      if (!response.ok || !data.success) {
-        toast.error(data.error ?? "Unable to parse CV with AI.");
-        return;
-      }
-
-      form.reset(data.profile as ProfileFormValues);
-      toast.success("CV parsed with AI and profile autofilled.");
-    } catch {
-      toast.error("Unable to parse CV. Please try again.");
-    } finally {
-      setIsParsing(false);
-    }
-  }
-
   async function getAIConfigForRequest() {
     if (!config?.provider || !config?.modelName) {
       throw new Error("AI configuration not found in aiConfig table.");
@@ -767,18 +722,9 @@ export function ProfileForm() {
                 className="gap-1.5"
               >
                 <Zap className="size-3.5 text-amber-500" />
-                {isParsing ? "Extracting..." : "Extract Without AI"}
+                {isParsing ? "Extracting..." : "Extract"}
               </Button>
-              <Button
-                type="button"
-                size="sm"
-                disabled={!uploadFile || isParsing || !config}
-                onClick={handleParseWithAI}
-                className="gap-1.5 bg-linear-to-r from-violet-600 to-primary hover:from-violet-700 hover:to-primary/90"
-              >
-                <Bot className="size-3.5" />
-                {isParsing ? "Parsing..." : "Parse with AI"}
-              </Button>
+
               {!config && (
                 <p className="text-center text-[10px] text-muted-foreground">
                   Add AI key to enable AI parse
@@ -837,7 +783,6 @@ export function ProfileForm() {
             )}
             <Button
               type="button"
-              variant="secondary"
               size="sm"
               disabled={isManualSaving}
               onClick={handleSaveCurrentTab}
@@ -854,7 +799,12 @@ export function ProfileForm() {
             </Button>
             {currentTabIndex < TABS.length - 1 ? (
               /* ****** Next validates current tab fields before advancing ****** */
-              <Button type="button" size="sm" onClick={handleNext}>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={handleNext}
+              >
                 Next
                 <ChevronRight className="size-4" />
               </Button>

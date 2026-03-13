@@ -17,7 +17,7 @@ export default function modulesLayout({
         <div className="container mx-auto flex items-center justify-between px-6 py-3">
           {/* Brand */}
           <Link
-            href="/dashboard"
+            href="/"
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
             <div className="bg-primary rounded-md p-1.5">

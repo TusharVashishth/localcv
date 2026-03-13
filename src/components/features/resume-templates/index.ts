@@ -50,9 +50,11 @@ export const TEMPLATE_PREVIEW_DATA: ResumeTemplateData = {
         website: "alexm.dev",
         linkedin: "linkedin.com/in/alexm",
         github: "github.com/alexm",
+        photo:
+            "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=320&q=80",
     },
     summary:
-        "Results-driven engineer with 7+ years of experience delivering reliable and scalable products. Strong focus on performance, observability, and team collaboration.",
+        "Product-minded software engineer with 8+ years of experience building resume, hiring, and workflow tools for fast-moving teams. Known for turning ambiguous requirements into polished user experiences, improving system reliability, and mentoring engineers across frontend and platform work.",
     experience: [
         {
             company: "Atlas Cloud",
@@ -61,44 +63,96 @@ export const TEMPLATE_PREVIEW_DATA: ResumeTemplateData = {
             startDate: "2022",
             endDate: "Present",
             achievements: [
-                "Reduced API latency by 38% by redesigning critical read paths.",
-                "Implemented CI quality gates that lowered production regressions by 27%.",
+                "Rebuilt resume generation flows to reduce completion time by 38% across high-intent users.",
+                "Introduced quality gates and analytics reviews that cut production regressions by 27%.",
+                "Partnered with design and growth teams to launch role-based resume templates that improved template adoption by 31%.",
             ],
         },
         {
-            company: "Nova Systems",
-            role: "Software Engineer",
+            company: "Northstar Labs",
+            role: "Frontend Engineer",
             location: "New York, NY",
-            startDate: "2019",
+            startDate: "2020",
             endDate: "2022",
             achievements: [
-                "Built internal tooling that saved 20+ engineering hours per week.",
+                "Launched dashboard tooling that saved recruiting teams 20+ hours per week.",
+                "Built reusable component systems that reduced duplicated UI work across 6 internal products.",
+            ],
+        },
+        {
+            company: "BluePeak Studio",
+            role: "Software Engineer",
+            location: "Seattle, WA",
+            startDate: "2018",
+            endDate: "2020",
+            achievements: [
+                "Delivered customer-facing workflow builders used by more than 12,000 monthly active users.",
+                "Improved page performance scores by over 30 points through code-splitting and rendering optimizations.",
             ],
         },
     ],
     education: [
         {
-            institution: "State University",
-            degree: "B.Sc.",
-            field: "Computer Science",
+            institution: "University of Washington",
+            degree: "B.S.",
+            field: "Informatics",
             startDate: "2014",
             endDate: "2018",
         },
+        {
+            institution: "DesignLab",
+            degree: "Certificate",
+            field: "UX Design Foundations",
+            startDate: "2019",
+            endDate: "2020",
+        },
     ],
-    skills: ["TypeScript", "React", "Node.js", "PostgreSQL", "AWS", "Docker"],
+    skills: [
+        "TypeScript",
+        "React",
+        "Next.js",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "Tailwind CSS",
+        "Design Systems",
+        "Product Strategy",
+        "Performance",
+    ],
     projects: [
         {
-            name: "Realtime Analytics Platform",
-            description: "A high-throughput event processing service.",
-            highlights: ["Processes 2M+ events/day", "99.95% uptime"],
-            technologies: ["Kafka", "Go", "ClickHouse"],
-            link: "https://example.com/project",
+            name: "localCV Builder",
+            description:
+                "A local-first resume builder with AI-assisted tailoring and export-ready previews.",
+            highlights: [
+                "Improved template switching performance for large resumes",
+                "Shipped ATS-focused exports with customizable section order",
+                "Added privacy-first local storage flows for profile management",
+            ],
+            technologies: ["Next.js", "TypeScript", "Dexie", "Tailwind CSS"],
+            link: "https://localcv.app",
+        },
+        {
+            name: "Hiring Insights Dashboard",
+            description:
+                "A recruiter-facing analytics suite for monitoring funnel quality and role performance.",
+            highlights: [
+                "Designed reusable dashboard blocks for rapid reporting",
+                "Integrated trend visualizations and benchmark summaries",
+            ],
+            technologies: ["React", "Node.js", "PostgreSQL", "Charts"],
+            link: "https://example.com/hiring-insights",
         },
     ],
     certifications: [
         {
-            name: "AWS Solutions Architect",
+            name: "AWS Certified Developer",
             issuer: "Amazon Web Services",
+            issueDate: "2025",
+        },
+        {
+            name: "Professional Scrum Master I",
+            issuer: "Scrum.org",
             issueDate: "2024",
         },
     ],
@@ -107,8 +161,26 @@ export const TEMPLATE_PREVIEW_DATA: ResumeTemplateData = {
             name: "English",
             proficiency: "Native",
         },
+        {
+            name: "Spanish",
+            proficiency: "Professional",
+        },
     ],
 };
+
+export function getTemplatePreviewStyleConfig(
+    template: ResumeTemplate,
+    styleConfig: ResumeStyleConfig,
+): ResumeStyleConfig {
+    const accentColor =
+        template.defaultAccentColor ?? styleConfig.accentColor;
+
+    return {
+        ...styleConfig,
+        accentColor,
+        sidebarColor: accentColor,
+    };
+}
 
 export const RESUME_TEMPLATES: ResumeTemplate[] = [
     {

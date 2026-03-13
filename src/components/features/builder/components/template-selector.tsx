@@ -2,12 +2,15 @@
 
 /* ****** Template Selector with Thumbnail Previews ****** */
 
+import {
+  getTemplatePreviewStyleConfig,
+  TEMPLATE_PREVIEW_DATA,
+} from "@/components/features/resume-templates";
 import type {
   ResumeTemplate,
   ResumeTemplateData,
 } from "@/components/features/resume-templates";
 import type { ResumeStyleConfig } from "@/components/features/resume-templates/types";
-import { TEMPLATE_PREVIEW_DATA } from "@/components/features/resume-templates";
 import { cn } from "@/lib/utils";
 
 interface TemplateSelectorProps {
@@ -35,11 +38,10 @@ export function TemplateSelector({
         const TemplateComponent = template.component;
 
         /* ****** Per-template accent color override for thumbnail ****** */
-        const thumbStyleConfig: ResumeStyleConfig = {
-          ...styleConfig,
-          accentColor: template.defaultAccentColor ?? styleConfig.accentColor,
-          sidebarColor: template.defaultAccentColor ?? styleConfig.accentColor,
-        };
+        const thumbStyleConfig = getTemplatePreviewStyleConfig(
+          template,
+          styleConfig,
+        );
 
         return (
           <button

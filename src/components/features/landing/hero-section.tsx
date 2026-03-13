@@ -45,15 +45,15 @@ export function HeroSection() {
           className="max-w-3xl text-base text-muted-foreground sm:text-lg"
         >
           The open source way to craft a standout resume{" "}
-          <TextHighlighter color="yellow" animated={false}>
+          <TextHighlighter color="yellow" animated={true}>
             completely free
           </TextHighlighter>
           , with{" "}
-          <TextHighlighter color="blue" animated={false}>
+          <TextHighlighter color="blue" animated={true}>
             no signup and no paywall
           </TextHighlighter>
           . Your data stays on your device while you build with{" "}
-          <TextHighlighter color="green" animated={false}>
+          <TextHighlighter color="green" animated={true}>
             ATS-ready templates
           </TextHighlighter>{" "}
           and AI-powered refinements that help every application hit harder.
