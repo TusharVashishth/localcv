@@ -1,6 +1,6 @@
 # localCV
 
-localCV is an open source, local-first AI resume maker built for people who want a faster way to create ATS-ready resumes without giving up control of their data.
+LocalCV is an open source, local-first AI resume maker built for people who want a faster way to create ATS-ready resumes without giving up control of their data.
 
 Live app: https://localcv.tusharvashishth.com
 
@@ -32,22 +32,13 @@ localCV takes a different approach:
 
 ### Prerequisites
 
-- Node.js 24.11.1
+- Node.js >= 24
 - npm
-- nvm recommended
-
-Before any npm command in this project, use the required Node version:
-
-```bash
-nvm use 24.11.1
-```
 
 ### Install and Run
 
 ```bash
-nvm use 24.11.1
 npm install
-npm run dev
 ```
 
 Open http://localhost:3000 in your browser.
