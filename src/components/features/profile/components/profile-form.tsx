@@ -383,7 +383,7 @@ export function ProfileForm() {
     const next = [...current];
     next[index] = {
       ...next[index],
-      [key]: key === "achievements" ? value.split("\n").filter(Boolean) : value,
+      [key]: key === "achievements" ? value.split("\n") : value,
     };
     form.setValue("experience", next, {
       shouldDirty: true,
@@ -458,10 +458,7 @@ export function ProfileForm() {
       ...next[index],
       [key]:
         key === "highlights" || key === "technologies"
-          ? value
-              .split("\n")
-              .map((entry) => entry.trim())
-              .filter(Boolean)
+          ? value.split("\n")
           : value,
     };
     form.setValue("projects", next, {
@@ -621,7 +618,7 @@ export function ProfileForm() {
 
     setIsManualSaving(true);
     try {
-      await saveProfile(form.getValues());
+      await saveProfileData(form.getValues());
       toast.success("Tab data saved successfully.");
     } catch {
       toast.error("Unable to save. Please try again.");
@@ -630,12 +627,36 @@ export function ProfileForm() {
     }
   }
 
+  async function saveProfileData(values: ProfileFormValues) {
+    // Clean up array fields by trimming and filtering out empty strings before saving
+    const cleanedValues: ProfileFormValues = {
+      ...values,
+      experience: values.experience.map((exp) => ({
+        ...exp,
+        achievements: exp.achievements
+          .map((a) => a.trim())
+          .filter((a) => a !== ""),
+      })),
+      projects: values.projects.map((proj) => ({
+        ...proj,
+        highlights: proj.highlights
+          .map((h) => h.trim())
+          .filter((h) => h !== ""),
+        technologies: proj.technologies
+          .map((t) => t.trim())
+          .filter((t) => t !== ""),
+      })),
+      skills: values.skills.map((s) => s.trim()).filter((s) => s !== ""),
+    };
+    await saveProfile(cleanedValues);
+  }
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(async (values: ProfileFormValues) => {
           try {
-            await saveProfile(values);
+            await saveProfileData(values);
             toast.success("Profile saved successfully.");
           } catch {
             toast.error("Unable to save profile. Please try again.");

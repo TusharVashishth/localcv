@@ -13,6 +13,12 @@ export function HeroSection() {
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(34,197,94,0.12),transparent_60%)] dark:bg-[radial-gradient(circle_at_bottom,rgba(22,163,74,0.2),transparent_60%)]" />
+      <div
+        className="absolute inset-0 opacity-50 bg-[linear-gradient(rgba(34,197,94,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.08)_1px,transparent_1px)] dark:opacity-60 dark:bg-[linear-gradient(rgba(74,222,128,0.16)_1px,transparent_1px),linear-gradient(90deg,rgba(74,222,128,0.16)_1px,transparent_1px)]"
+        style={{
+          backgroundSize: "28px 28px",
+        }}
+      />
       <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center gap-8 px-6 pb-24 pt-28 text-center md:px-10">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -45,15 +51,15 @@ export function HeroSection() {
           className="max-w-3xl text-base text-muted-foreground sm:text-lg"
         >
           The open source way to craft a standout resume{" "}
-          <TextHighlighter color="yellow" animated={true}>
+          <TextHighlighter color="yellow" animated={false}>
             completely free
           </TextHighlighter>
           , with{" "}
-          <TextHighlighter color="blue" animated={true}>
+          <TextHighlighter color="blue" animated={false}>
             no signup and no paywall
           </TextHighlighter>
           . Your data stays on your device while you build with{" "}
-          <TextHighlighter color="green" animated={true}>
+          <TextHighlighter color="green" animated={false}>
             ATS-ready templates
           </TextHighlighter>{" "}
           and AI-powered refinements that help every application hit harder.

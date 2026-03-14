@@ -198,16 +198,74 @@ export function PhotoTemplate({
         return (
           <section className="space-y-2">
             {sectionTitle("Projects")}
-            {data.projects.map((proj, i) => (
-              <div key={i} className="space-y-0.5">
+            {data.projects.map((item, index) => (
+              <div
+                key={`${item.name}-${index}`}
+                className={compact ? "space-y-0.5" : "space-y-1"}
+              >
                 <h3
-                  className={`${contentTextSize} font-semibold text-foreground`}
+                  className={
+                    compact
+                      ? "text-[10px] font-semibold"
+                      : "text-xs font-semibold"
+                  }
                 >
-                  {proj.name}
+                  {item.name}{" "}
+                  {item.link && (
+                    <a
+                      href={
+                        item.link.startsWith("http")
+                          ? item.link
+                          : `https://${item.link}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-1 text-muted-foreground hover:underline "
+                    >
+                      (Link)
+                    </a>
+                  )}
                 </h3>
-                <p className={`${contentTextSize} text-foreground`}>
-                  {proj.description}
-                </p>
+                <p className={contentTextSize}>{item.description}</p>
+                {item.technologies.length > 0 && (
+                  <>
+                    <span
+                      className={
+                        compact
+                          ? "text-[10px] font-semibold"
+                          : "text-xs font-semibold"
+                      }
+                    >
+                      Technologies :-
+                    </span>
+                    <span className={contentTextSize}>
+                      {item.technologies.join(", ")}
+                    </span>
+                  </>
+                )}
+                {item.highlights.length > 0 && (
+                  <>
+                    <br />
+                    <span
+                      className={
+                        compact
+                          ? "text-[10px] font-semibold"
+                          : "text-xs font-semibold"
+                      }
+                    >
+                      Highlights :-
+                    </span>
+                    <ul
+                      className={`${contentTextSize} list-disc pl-4 space-y-0.5`}
+                    >
+                      {item.highlights.map((highlight, highlightIndex) => (
+                        <li key={`${item.name}-highlight-${highlightIndex}`}>
+                          {highlight}
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
               </div>
             ))}
           </section>

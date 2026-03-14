@@ -38,7 +38,7 @@ const workExperienceSchema = z.object({
         .optional()
         .or(z.literal(""))
         .transform((value) => (value ? value : undefined)),
-    achievements: z.array(z.string().trim().min(1)).default([]),
+    achievements: z.array(z.string()).default([]),
 });
 
 const educationSchema = z.object({
@@ -52,8 +52,8 @@ const educationSchema = z.object({
 const projectSchema = z.object({
     name: z.string().trim().min(1, "Project name is required"),
     description: z.string().trim().min(1, "Project description is required"),
-    highlights: z.array(z.string().trim().min(1)).default([]),
-    technologies: z.array(z.string().trim().min(1)).default([]),
+    highlights: z.array(z.string()).default([]),
+    technologies: z.array(z.string()).default([]),
     link: optionalUrl,
 });
 
@@ -79,7 +79,7 @@ export const profileSchema = z.object({
     summary: z.string().trim().min(10, "Summary is required"),
     experience: z.array(workExperienceSchema).min(1, "Add at least one experience"),
     education: z.array(educationSchema).min(1, "Add at least one education entry"),
-    skills: z.array(z.string().trim().min(1)).min(1, "Add at least one skill"),
+    skills: z.array(z.string()).min(1, "Add at least one skill"),
     projects: z.array(projectSchema).default([]),
     certifications: z.array(certificationSchema).default([]),
     languages: z.array(languageSchema).default([]),

@@ -262,6 +262,29 @@ export function CreativeTemplate({
                       ))}
                     </div>
                   )}
+                  {proj.highlights.length > 0 && (
+                    <>
+                      <br />
+                      <span
+                        className={
+                          compact
+                            ? "text-[10px] font-semibold"
+                            : "text-xs font-semibold"
+                        }
+                      >
+                        Highlights :-
+                      </span>
+                      <ul
+                        className={`${contentTextSize} list-disc pl-4 space-y-0.5`}
+                      >
+                        {proj.highlights.map((highlight, highlightIndex) => (
+                          <li key={`${proj.name}-highlight-${highlightIndex}`}>
+                            {highlight}
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
                 </div>
               ))}
             </div>

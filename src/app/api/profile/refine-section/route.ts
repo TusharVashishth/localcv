@@ -18,25 +18,6 @@ function createRequestContext(config: z.infer<typeof configSchema>) {
     return requestContext;
 }
 
-async function runWithProviderFallback<T>(
-    execute: () => Promise<T>,
-    maxAttempts = 2,
-) {
-    let lastError: unknown;
-
-    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-        try {
-            return await execute();
-        } catch (error) {
-            lastError = error;
-            if (attempt < maxAttempts) {
-                await new Promise((resolve) => setTimeout(resolve, 250 * attempt));
-            }
-        }
-    }
-
-    throw lastError;
-}
 
 function getReasoningErrorMessage(error: unknown) {
     const message = error instanceof Error ? error.message : "";

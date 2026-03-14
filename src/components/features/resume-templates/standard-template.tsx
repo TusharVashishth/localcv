@@ -249,17 +249,61 @@ export function StandardTemplate({
                 compact ? "text-[10px] font-semibold" : "text-xs font-semibold"
               }
             >
-              {item.name}
+              {item.name}{" "}
+              {item.link && (
+                <a
+                  href={
+                    item.link.startsWith("http")
+                      ? item.link
+                      : `https://${item.link}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-1 text-muted-foreground hover:underline "
+                >
+                  (Link)
+                </a>
+              )}
             </h3>
             <p className={contentTextClass}>{item.description}</p>
+            {item.technologies.length > 0 && (
+              <>
+                <span
+                  className={
+                    compact
+                      ? "text-[10px] font-semibold"
+                      : "text-xs font-semibold"
+                  }
+                >
+                  Technologies :-
+                </span>
+                <span className={contentTextClass}>
+                  {item.technologies.join(", ")}
+                </span>
+              </>
+            )}
             {item.highlights.length > 0 && (
-              <ul className={`${contentTextClass} list-disc pl-4 space-y-0.5`}>
-                {item.highlights.map((highlight, highlightIndex) => (
-                  <li key={`${item.name}-highlight-${highlightIndex}`}>
-                    {highlight}
-                  </li>
-                ))}
-              </ul>
+              <>
+                <br />
+                <span
+                  className={
+                    compact
+                      ? "text-[10px] font-semibold"
+                      : "text-xs font-semibold"
+                  }
+                >
+                  Highlights :-
+                </span>
+                <ul
+                  className={`${contentTextClass} list-disc pl-4 space-y-0.5`}
+                >
+                  {item.highlights.map((highlight, highlightIndex) => (
+                    <li key={`${item.name}-highlight-${highlightIndex}`}>
+                      {highlight}
+                    </li>
+                  ))}
+                </ul>
+              </>
             )}
           </div>
         ))}

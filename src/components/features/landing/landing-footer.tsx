@@ -5,9 +5,16 @@ export function LandingFooter() {
 
       <div className="relative z-10 pb-20 flex flex-col items-center justify-center text-center space-y-6 px-6">
         <p className="text-lg font-medium text-zinc-800 dark:text-zinc-200 max-w-md">
-          Build better careers with privacy first.
+          Built with ❤️ by{" "}
+          <a
+            href="https://tusharvashishth.com"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Tushar Vashishth
+          </a>
         </p>
-        <div className="flex gap-4 text-sm text-zinc-600 dark:text-zinc-400">
+        {/* <div className="flex gap-4 text-sm text-zinc-600 dark:text-zinc-400">
           <a href="#" className="hover:text-primary transition-colors">
             Privacy Policy
           </a>
@@ -19,14 +26,14 @@ export function LandingFooter() {
           <a href="#" className="hover:text-primary transition-colors">
             Contact
           </a>
-        </div>
-        <p className="text-xs uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mt-8">
+        </div> */}
+        <p className="text-xs uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mt-2">
           &copy; {new Date().getFullYear()} localCV. All rights reserved.
         </p>
       </div>
 
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex justify-center overflow-hidden">
-        <p className="text-[clamp(4rem,15vw,12rem)] font-black leading-[0.75] tracking-tighter text-transparent bg-gradient-to-b from-zinc-300/50 to-zinc-400/10 bg-clip-text dark:from-zinc-800/80 dark:to-zinc-900/20 select-none">
+        <p className="text-[clamp(4rem,15vw,12rem)] font-black leading-[0.75] tracking-tighter text-transparent bg-linear-to-b from-zinc-300/50 to-zinc-400/10 bg-clip-text dark:from-zinc-800/80 dark:to-zinc-900/20 select-none">
           LOCAL CV
         </p>
       </div>
