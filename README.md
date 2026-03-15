@@ -138,20 +138,14 @@ npm run cy:open
 
 Contributions are welcome.
 
-If you want to contribute:
+Please read the full contribution guide in `CONTRIBUTING.md` before opening a pull request. It includes setup, standards, testing expectations, and PR checklist.
 
-1. Fork the repository.
-2. Create a focused branch for your change.
-3. Keep changes small, readable, and aligned with the existing structure.
-4. Run linting and relevant tests before opening a pull request.
+Quick contributor checklist:
 
-Repository conventions:
-
-- Use camelCase for variables and functions
-- Use PascalCase for React components
-- Use kebab-case for file names
-- Keep components small and reusable
-- Prefer API routes for server-side logic instead of putting server work into client components
+1. Use the right Node version: `nvm use 24.11.1`
+2. Run lint and tests: `npm run lint` and `npm run test:e2e`
+3. Keep changes focused and aligned with project conventions
+4. Open a PR and ensure all CI checks pass
 
 Issues, fixes, UX improvements, and documentation improvements are all useful contributions.
 
