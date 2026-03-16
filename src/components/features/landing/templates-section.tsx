@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 import {
@@ -18,6 +18,7 @@ function TemplatePage({
   template: (typeof RESUME_TEMPLATES)[number];
   priority: boolean;
 }) {
+  const router = useRouter();
   const TemplateComponent = template.component;
   const styleConfig = getTemplatePreviewStyleConfig(
     template,
@@ -28,15 +29,19 @@ function TemplatePage({
     fontSize: "large" as const,
   };
 
+  const handleNavigate = () => router.push("/dashboard/builder");
+
   return (
     <motion.div whileHover={{ y: -8 }} className="flex justify-center">
-      <Link
-        href="/dashboard/builder"
-        prefetch={priority}
-        className="group block shrink-0"
+      <article
+        onClick={handleNavigate}
+        onKeyDown={(e) => e.key === "Enter" && handleNavigate()}
+        role="button"
+        tabIndex={0}
+        className="group block shrink-0 cursor-pointer"
         aria-label={`Open ${template.name} template in builder`}
       >
-        <article className="relative w-84 overflow-hidden   transition-transform duration-300 sm:w-88">
+        <div className="relative w-84 overflow-hidden transition-transform duration-300 sm:w-88">
           <div className="relative aspect-210/297 overflow-hidden border border-slate-200/90 bg-background dark:border-white/12">
             <div
               className="pointer-events-none absolute top-0 left-0 origin-top-left"
@@ -48,8 +53,8 @@ function TemplatePage({
               />
             </div>
           </div>
-        </article>
-      </Link>
+        </div>
+      </article>
     </motion.div>
   );
 }

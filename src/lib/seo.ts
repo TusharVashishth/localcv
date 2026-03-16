@@ -16,7 +16,7 @@ export const seoConfig = {
     defaultTitle: "Free ATS-Optimized Resume Builder",
     defaultDescription:
         "Build ATS-ready resumes with a local-first, privacy-focused resume builder. Create, refine, and export role-specific resumes in minutes.",
-    defaultOgImage: "/assets/logos/logo.png",
+    defaultOgImage: "/opengraph-image",
     defaultKeywords: [
         "resume builder",
         "ATS resume",
@@ -79,7 +79,7 @@ export function buildRootMetadata(): Metadata {
                     url: seoConfig.defaultOgImage,
                     width: 1200,
                     height: 630,
-                    alt: `${seoConfig.siteName} logo`,
+                    alt: `${seoConfig.siteName} hero preview`,
                 },
             ],
         },
@@ -129,7 +129,7 @@ export function buildPageMetadata(
                     url: seoConfig.defaultOgImage,
                     width: 1200,
                     height: 630,
-                    alt: `${seoConfig.siteName} preview`,
+                    alt: `${seoConfig.siteName} hero preview`,
                 },
             ],
         },
