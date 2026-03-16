@@ -65,16 +65,6 @@ const COMING_SOON = [
     borderColor: "border-emerald-200/50 dark:border-emerald-800/30",
     iconGradient: "from-emerald-500 to-teal-500",
   },
-  {
-    id: "jd",
-    title: "Company-wise Resume",
-    description:
-      "Create tailored resumes targeted to specific companies and role requirements.",
-    icon: BriefcaseBusiness,
-    gradient: "from-pink-500/10 via-rose-500/5 to-transparent",
-    borderColor: "border-pink-200/50 dark:border-pink-800/30",
-    iconGradient: "from-violet-500 to-pink-500",
-  },
 ] as const;
 
 export function DashboardClient() {
@@ -332,6 +322,37 @@ export function DashboardClient() {
               );
             })}
           </div>
+        </section>
+
+        {/* ****** Company Resumes feature section ****** */}
+        <section className="rounded-xl border bg-linear-to-br from-pink-500/10 via-rose-500/5 to-transparent border-pink-200/50 dark:border-pink-800/30 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            <div className="flex items-center justify-center size-10 rounded-xl bg-linear-to-br from-violet-500 to-pink-500 text-white shrink-0">
+              <BriefcaseBusiness className="size-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold">Company-wise Resume</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Create AI-tailored resumes targeted to specific companies and
+                role requirements.
+              </p>
+            </div>
+          </div>
+          <Button
+            size="sm"
+            className="shrink-0 gap-1.5"
+            disabled={!isProfileCompleted || !hasApiKey}
+            onClick={() => router.push("/dashboard/company-resumes")}
+          >
+            {!isProfileCompleted
+              ? "Complete Profile First"
+              : !hasApiKey
+                ? "Add AI Key First"
+                : "Open Company Resumes"}
+            {isProfileCompleted && hasApiKey && (
+              <ArrowRight className="size-3.5" />
+            )}
+          </Button>
         </section>
 
         {/* ****** Coming soon ****** */}

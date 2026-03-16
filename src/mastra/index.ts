@@ -8,11 +8,12 @@ import {
   profileSummaryAgent,
   projectRefineAgent,
 } from "./agents/resume-agent";
+import { jdTailorAgent } from "./agents/jd-tailor-agent";
 
 
 export const mastra = new Mastra({
   workflows: { weatherWorkflow },
-  agents: { profileSummaryAgent, experienceRefineAgent, projectRefineAgent },
+  agents: { profileSummaryAgent, experienceRefineAgent, projectRefineAgent, jdTailorAgent },
   // storage: new LibSQLStore({
   //   id: "mastra-storage",
   //   // stores observability, scores, ... into persistent file storage
