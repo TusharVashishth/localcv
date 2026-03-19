@@ -76,3 +76,19 @@ export interface LanguageSkill {
     name: string;
     proficiency: string;
 }
+
+export interface CompanyResume {
+    id?: number;
+    companyName: string;
+    jobDescription: string;
+    profile: ResumeProfile;
+    summary: string;
+    experience: WorkExperience[];
+    education: Education[];
+    skills: string[];
+    projects: Projects[];
+    certifications: Certification[];
+    languages: LanguageSkill[];
+    createdAt: Date;
+    updatedAt: Date;
+}

@@ -1,5 +1,3 @@
-# Project-scoped MCP server config synchronized from mcp.json
-
 [mcp_servers.next-devtools]
 command = "npx"
 args = ["-y", "next-devtools-mcp@latest"]
