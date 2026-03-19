@@ -153,7 +153,6 @@ export function CompanyResumeBuilderClient({
             className="gap-1.5 text-muted-foreground"
           >
             <ArrowLeft className="size-3.5" />
-            Company Resumes
           </Button>
         </Link>
         <div>

@@ -5,10 +5,25 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/lib/db";
 import type { CompanyResume } from "@/lib/db/schema";
 
-export function useCompanyResumes() {
+export function useCompanyResumes(companyNameSearch = "") {
+    const normalizedCompanyNameSearch = companyNameSearch.trim();
+
     const companyResumes = useLiveQuery(
-        () => db.companyResumes.orderBy("id").reverse().toArray(),
-        [],
+        async () => {
+            if (!normalizedCompanyNameSearch) {
+                return db.companyResumes.orderBy("id").reverse().toArray();
+            }
+
+            const resumes = await db.companyResumes
+                .where("companyName")
+                .startsWithIgnoreCase(normalizedCompanyNameSearch)
+                .toArray();
+
+            return resumes.sort((resumeA, resumeB) => {
+                return resumeB.id!! - resumeA.id!!;
+            });
+        },
+        [normalizedCompanyNameSearch],
     );
 
     const isLoading = companyResumes === undefined;

@@ -3,7 +3,7 @@
 /* ****** Card component for a single company resume entry ****** */
 
 import { useRouter } from "next/navigation";
-import { BriefcaseBusiness, Trash2, Hammer } from "lucide-react";
+import { BriefcaseBusiness, Trash2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -66,8 +66,8 @@ export function CompanyResumeCard({
           className="flex-1 gap-1.5"
           onClick={() => router.push(`/dashboard/company-resumes/${resume.id}`)}
         >
-          <Hammer className="size-3.5" />
-          Build Resume
+          <Download className="size-3.5" />
+          Download Resume
         </Button>
 
         <AlertDialog>
