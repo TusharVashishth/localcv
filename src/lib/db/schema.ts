@@ -77,6 +77,35 @@ export interface LanguageSkill {
     proficiency: string;
 }
 
+export interface ATSScoreBreakdown {
+    keywordMatch: number;
+    experienceRelevance: number;
+    skillsMatch: number;
+    formatQuality: number;
+}
+
+export interface ATSSectionFeedback {
+    summary: string;
+    experience: string;
+    skills: string;
+    education: string;
+}
+
+export interface ATSResult {
+    id?: number;
+    jobTitle?: string;
+    jobDescription: string;
+    score: number;
+    scoreBreakdown: ATSScoreBreakdown;
+    matchedKeywords: string[];
+    missingKeywords: string[];
+    strengths: string[];
+    improvements: string[];
+    sectionFeedback: ATSSectionFeedback;
+    generatedResume?: CompanyResume;
+    createdAt: Date;
+}
+
 export interface CompanyResume {
     id?: number;
     companyName: string;
