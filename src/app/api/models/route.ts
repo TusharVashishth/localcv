@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
     try {
         const response = await fetch("https://models.dev/api.json", {
-            next: { revalidate: 86400 },
+            cache: "no-cache"
         });
 
         if (!response.ok) {

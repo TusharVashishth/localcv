@@ -29,5 +29,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
             changeFrequency: "weekly",
             priority: 0.7,
         },
+        {
+            url: `${seoConfig.siteUrl}/dashboard/company-resumes`,
+            lastModified: now,
+            changeFrequency: "weekly",
+            priority: 0.7,
+        },
+        {
+            url: `${seoConfig.siteUrl}/dashboard/ats-scorer`,
+            lastModified: now,
+            changeFrequency: "weekly",
+            priority: 0.7,
+        },
     ];
 }

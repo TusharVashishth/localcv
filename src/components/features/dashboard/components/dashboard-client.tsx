@@ -60,19 +60,6 @@ const STEPS = [
   },
 ] as const;
 
-/* ****** Coming soon card data ****** */
-const COMING_SOON = [
-  {
-    id: "ats",
-    title: "Resume ATS Scorer",
-    description:
-      "Analyze your resume against ATS systems and get actionable improvement suggestions.",
-    icon: Target,
-    gradient: "from-emerald-500/10 via-teal-500/5 to-transparent",
-    borderColor: "border-emerald-200/50 dark:border-emerald-800/30",
-    iconGradient: "from-emerald-500 to-teal-500",
-  },
-] as const;
 
 export function DashboardClient() {
   const router = useRouter();
@@ -434,59 +421,49 @@ export function DashboardClient() {
           </section>
         </BlurFade>
 
-        {/* ****** Coming soon ****** */}
+        {/* ****** ATS Score Checker feature section ****** */}
         <BlurFade delay={0.3} direction="up">
-          <section>
-            <div className="flex items-center gap-2 mb-5">
-              <h2 className="text-base font-semibold">Coming Soon</h2>
-              <Badge
-                variant="outline"
-                className="text-[10px] text-muted-foreground"
+          <section className="relative overflow-hidden rounded-xl border bg-linear-to-br from-emerald-500/10 via-teal-500/5 to-transparent border-emerald-200/50 dark:border-emerald-800/30 p-5 flex flex-col sm:flex-row sm:items-center gap-4 transition-shadow hover:shadow-md hover:shadow-emerald-500/10">
+            {/* Subtle ambient glow */}
+            <div className="pointer-events-none absolute -right-8 -top-8 size-32 rounded-full bg-teal-500/10 blur-2xl" />
+
+            <div className="flex items-center gap-4 flex-1 min-w-0 relative">
+              <motion.div
+                whileHover={{ scale: 1.08, rotate: -3 }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center justify-center size-10 rounded-xl bg-linear-to-br from-emerald-500 to-teal-500 text-white shrink-0 shadow-sm shadow-emerald-500/30"
               >
-                Roadmap
-              </Badge>
-              <div className="h-px flex-1 bg-border" />
+                <Target className="size-5" />
+              </motion.div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <p className="text-sm font-semibold">ATS Score Checker</p>
+                  <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-800/40 text-[10px] gap-1 h-5">
+                    <Zap className="size-2.5" />
+                    AI Powered
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Paste a job description to get an ATS compatibility score, keyword analysis, and improvement suggestions.
+                </p>
+              </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {COMING_SOON.map((card, index) => {
-                const Icon = card.icon;
-                return (
-                  <motion.div
-                    key={card.id}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      delay: 0.32 + index * 0.08,
-                      duration: 0.4,
-                      ease: "easeOut",
-                    }}
-                    className={`relative overflow-hidden rounded-xl border bg-linear-to-br ${card.gradient} ${card.borderColor} p-5 flex items-start gap-4`}
-                  >
-                    <div
-                      className={`flex items-center justify-center size-10 rounded-xl bg-linear-to-br ${card.iconGradient} text-white shrink-0 opacity-60`}
-                    >
-                      <Icon className="size-5" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="text-sm font-semibold text-muted-foreground">
-                          {card.title}
-                        </p>
-                        <Badge
-                          variant="outline"
-                          className="text-[10px] text-muted-foreground h-4 px-1.5"
-                        >
-                          Soon
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground/70 leading-relaxed">
-                        {card.description}
-                      </p>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
+
+            <Button
+              size="sm"
+              className="shrink-0 gap-1.5 relative"
+              disabled={!isProfileCompleted || !hasApiKey}
+              onClick={() => router.push("/dashboard/ats-scorer")}
+            >
+              {!isProfileCompleted
+                ? "Complete Profile First"
+                : !hasApiKey
+                  ? "Add AI Key First"
+                  : "Check ATS Score"}
+              {isProfileCompleted && hasApiKey && (
+                <ArrowRight className="size-3.5" />
+              )}
+            </Button>
           </section>
         </BlurFade>
       </main>
