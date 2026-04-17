@@ -97,7 +97,7 @@ export function DownloadActions({
   <script>
     window.addEventListener('load', function () {
       /* small delay so fonts/images settle */
-      setTimeout(function () { window.print(); }, 600);
+      setTimeout(function () { window.print(); window.close(); }, 600);
     });
   <\/script>
 </body>

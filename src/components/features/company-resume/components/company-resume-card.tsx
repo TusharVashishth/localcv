@@ -3,7 +3,7 @@
 /* ****** Card component for a single company resume entry ****** */
 
 import { useRouter } from "next/navigation";
-import { BriefcaseBusiness, Trash2, Download } from "lucide-react";
+import { BriefcaseBusiness, Trash2, Download, FileText, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -60,15 +60,36 @@ export function CompanyResumeCard({
       </p>
 
       {/* ****** Actions ****** */}
-      <div className="flex items-center gap-2 mt-auto">
-        <Button
-          size="sm"
-          className="flex-1 gap-1.5"
-          onClick={() => router.push(`/dashboard/company-resumes/${resume.id}`)}
-        >
-          <Download className="size-3.5" />
-          Download Resume
-        </Button>
+      <div className="flex flex-col gap-2 mt-auto">
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            className="flex-1 gap-1.5"
+            onClick={() => router.push(`/dashboard/company-resumes/${resume.id}`)}
+          >
+            <Download className="size-3.5" />
+            Resume
+          </Button>
+
+          <Button
+            size="sm"
+            variant={resume.coverLetter ? "secondary" : "outline"}
+            className="flex-1 gap-1.5"
+            onClick={() => router.push(`/dashboard/company-resumes/${resume.id}/cover-letter`)}
+          >
+            {resume.coverLetter ? (
+              <>
+                <FileText className="size-3.5" />
+                Cover Letter
+              </>
+            ) : (
+              <>
+                <Sparkles className="size-3.5" />
+                Cover Letter
+              </>
+            )}
+          </Button>
+        </div>
 
         <AlertDialog>
           <AlertDialogTrigger
@@ -76,11 +97,12 @@ export function CompanyResumeCard({
               <Button
                 size="sm"
                 variant="outline"
-                className="gap-1.5 text-destructive hover:text-destructive"
+                className="w-full gap-1.5 text-destructive hover:text-destructive"
               />
             }
           >
             <Trash2 className="size-3.5" />
+            Delete Resume
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>

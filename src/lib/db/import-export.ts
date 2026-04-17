@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { db } from "./index";
 import type { AIConfig, ATSResult, CompanyResume, Profile } from "./schema";
+import type { CoverLetterContent, CoverLetterStyleConfig } from "./schema";
 
 // ─── Primitive helpers ────────────────────────────────────────────────────────
 
@@ -112,6 +113,30 @@ const profileSchema = z
     })
     .strict();
 
+/** Cover letter style configuration. */
+const coverLetterStyleConfigSchema = z
+    .object({
+        fontFamily: z.string(),
+        fontFamilyValue: z.string().optional(),
+        fontSize: z.enum(["small", "medium", "large"]),
+        textColor: z.string(),
+        accentColor: z.string(),
+        template: z.string(),
+    })
+    .strict();
+
+/** Generated cover letter content. */
+const coverLetterContentSchema = z
+    .object({
+        salutation: z.string(),
+        openingParagraph: z.string(),
+        bodyParagraphs: z.array(z.string()),
+        closingParagraph: z.string(),
+        signature: z.string(),
+        generatedAt: dateSchema,
+    })
+    .strict();
+
 /** Company-tailored resume generated from a profile + job description. */
 const companyResumeSchema = z
     .object({
@@ -125,6 +150,8 @@ const companyResumeSchema = z
         projects: z.array(projectSchema),
         certifications: z.array(certificationSchema),
         languages: z.array(languageSkillSchema),
+        coverLetter: coverLetterContentSchema.optional(),
+        coverLetterStyle: coverLetterStyleConfigSchema.optional(),
         createdAt: dateSchema,
         updatedAt: dateSchema,
     })
@@ -172,8 +199,8 @@ const atsResultSchema = z
 /** Versioned envelope that wraps all exported local data. */
 const localDataPayloadSchema = z
     .object({
-        /** Schema version: 1 = initial, 2 = +companyResumes, 3 = +atsResults. */
-        version: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+        /** Schema version: 1 = initial, 2 = +companyResumes, 3 = +atsResults, 4 = +coverLetter on companyResumes. */
+        version: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
         exportedAt: z.iso.datetime(),
         aiConfigs: z.array(aiConfigSchema),
         profiles: z.array(profileSchema),
@@ -198,7 +225,7 @@ export async function createLocalDataExport(): Promise<LocalDataPayload> {
     ]);
 
     return {
-        version: 3,
+        version: 4,
         exportedAt: new Date().toISOString(),
         aiConfigs: aiConfigs.map((item) => normalizeAiConfig(item)),
         profiles: profiles.map((item) => normalizeProfile(item)),
@@ -286,8 +313,34 @@ function normalizeCompanyResume(input: Omit<CompanyResume, "id">): Omit<CompanyR
         projects: input.projects.map(normalizeProject),
         certifications: input.certifications.map(normalizeCertification),
         languages: input.languages.map(normalizeLanguageSkill),
+        coverLetter: input.coverLetter ? normalizeCoverLetterContent(input.coverLetter) : undefined,
+        coverLetterStyle: input.coverLetterStyle ? normalizeCoverLetterStyle(input.coverLetterStyle) : undefined,
         createdAt: new Date(input.createdAt),
         updatedAt: new Date(input.updatedAt),
+    };
+}
+
+/** Re-hydrates dates for a cover letter content record. */
+function normalizeCoverLetterContent(input: CoverLetterContent): CoverLetterContent {
+    return {
+        salutation: input.salutation.trim(),
+        openingParagraph: input.openingParagraph.trim(),
+        bodyParagraphs: input.bodyParagraphs.map((p) => p.trim()),
+        closingParagraph: input.closingParagraph.trim(),
+        signature: input.signature.trim(),
+        generatedAt: new Date(input.generatedAt),
+    };
+}
+
+/** Normalizes cover letter style config. */
+function normalizeCoverLetterStyle(input: CoverLetterStyleConfig): CoverLetterStyleConfig {
+    return {
+        fontFamily: input.fontFamily.trim(),
+        fontFamilyValue: normalizeOptionalString(input.fontFamilyValue),
+        fontSize: input.fontSize,
+        textColor: input.textColor.trim(),
+        accentColor: input.accentColor.trim(),
+        template: input.template.trim(),
     };
 }
 

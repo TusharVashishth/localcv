@@ -26,4 +26,7 @@ db.version(3).stores({
     atsResults: "++id, createdAt",
 });
 
+/* ****** v4: additive — coverLetter + coverLetterStyle added to companyResumes (non-indexed fields) ****** */
+db.version(4).stores({});
+
 export { db };

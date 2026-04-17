@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/lib/db";
-import type { CompanyResume } from "@/lib/db/schema";
+import type { CompanyResume, CoverLetterContent, CoverLetterStyleConfig } from "@/lib/db/schema";
 
 export function useCompanyResumes(companyNameSearch = "") {
     const normalizedCompanyNameSearch = companyNameSearch.trim();
@@ -42,6 +42,38 @@ export function useCompanyResumes(companyNameSearch = "") {
     }, []);
 
     return { companyResumes, isLoading, saveCompanyResume, deleteCompanyResume };
+}
+
+export function useCompanyResumeCoverLetter(id: number) {
+    const companyResume = useLiveQuery(() => db.companyResumes.get(id), [id]);
+
+    const saveCoverLetter = useCallback(
+        async (coverLetter: CoverLetterContent): Promise<void> => {
+            await db.companyResumes.update(id, {
+                coverLetter,
+                updatedAt: new Date(),
+            });
+        },
+        [id],
+    );
+
+    const updateCoverLetterStyle = useCallback(
+        async (coverLetterStyle: CoverLetterStyleConfig): Promise<void> => {
+            await db.companyResumes.update(id, {
+                coverLetterStyle,
+                updatedAt: new Date(),
+            });
+        },
+        [id],
+    );
+
+    return {
+        coverLetter: companyResume?.coverLetter,
+        coverLetterStyle: companyResume?.coverLetterStyle,
+        isLoading: companyResume === undefined,
+        saveCoverLetter,
+        updateCoverLetterStyle,
+    };
 }
 
 export function useCompanyResume(id: number) {
