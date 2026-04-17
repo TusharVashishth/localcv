@@ -3,8 +3,18 @@
 /* ****** Card component for a single company resume entry ****** */
 
 import { useRouter } from "next/navigation";
-import { BriefcaseBusiness, Trash2, Download, FileText, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  BriefcaseBusiness,
+  Trash2,
+  Download,
+  FileText,
+  Sparkles,
+  CalendarDays,
+  CheckCircle2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,48 +33,69 @@ interface CompanyResumeCardProps {
   onDelete: (id: number) => Promise<void>;
 }
 
-export function CompanyResumeCard({
-  resume,
-  onDelete,
-}: CompanyResumeCardProps) {
+export function CompanyResumeCard({ resume, onDelete }: CompanyResumeCardProps) {
   const router = useRouter();
-  const truncatedJD =
-    resume.jobDescription.length > 120
-      ? resume.jobDescription.slice(0, 120) + "…"
+
+  const jdPreview =
+    resume.jobDescription.length > 100
+      ? resume.jobDescription.slice(0, 100) + "…"
       : resume.jobDescription;
 
+  const formattedDate = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(resume.createdAt);
+
   return (
-    <div className="relative overflow-hidden rounded-xl border bg-linear-to-br from-pink-500/10 via-rose-500/5 to-transparent border-pink-200/50 dark:border-pink-800/30 p-5 flex flex-col gap-4 transition-shadow hover:shadow-md">
-      {/* ****** Icon + company name ****** */}
-      <div className="flex items-start gap-3">
-        <div className="flex items-center justify-center size-9 rounded-lg bg-linear-to-br from-violet-500 to-pink-500 text-white shrink-0">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -3, transition: { duration: 0.18 } }}
+      className="group relative overflow-hidden rounded-xl border bg-gradient-to-br from-violet-500/8 via-pink-500/4 to-transparent border-violet-200/60 dark:border-violet-800/30 p-5 flex flex-col gap-4 transition-all duration-200 hover:shadow-lg hover:shadow-violet-500/8 dark:hover:shadow-violet-500/5"
+    >
+      {/* Ambient glow */}
+      <div className="pointer-events-none absolute -right-8 -top-8 size-28 rounded-full bg-pink-500/6 blur-2xl" />
+
+      {/* ****** Header ****** */}
+      <div className="flex items-start gap-3 relative">
+        <motion.div
+          whileHover={{ scale: 1.08, rotate: -4 }}
+          transition={{ duration: 0.15 }}
+          className="flex items-center justify-center size-9 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 text-white shrink-0 shadow-md shadow-violet-500/25"
+        >
           <BriefcaseBusiness className="size-4" />
-        </div>
+        </motion.div>
+
         <div className="min-w-0 flex-1">
-          <h3 className="font-semibold text-sm truncate">
+          <h3 className="font-semibold text-sm leading-snug line-clamp-2 pr-1">
             {resume.companyName}
           </h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {new Intl.DateTimeFormat("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            }).format(resume.createdAt)}
-          </p>
+          <div className="flex items-center gap-1 mt-1 text-muted-foreground">
+            <CalendarDays className="size-3 shrink-0" />
+            <p className="text-[11px]">{formattedDate}</p>
+          </div>
         </div>
+
+        {resume.coverLetter && (
+          <Badge className="shrink-0 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200/60 dark:border-emerald-800/40 text-[10px] gap-1 h-5">
+            <CheckCircle2 className="size-2.5" />
+            Letter
+          </Badge>
+        )}
       </div>
 
       {/* ****** JD preview ****** */}
-      <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
-        {truncatedJD}
+      <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-3 relative">
+        {jdPreview}
       </p>
 
       {/* ****** Actions ****** */}
-      <div className="flex flex-col gap-2 mt-auto">
+      <div className="flex flex-col gap-2 mt-auto relative">
         <div className="flex items-center gap-2">
           <Button
             size="sm"
-            className="flex-1 gap-1.5"
+            className="flex-1 gap-1.5 h-8 text-xs"
             onClick={() => router.push(`/dashboard/company-resumes/${resume.id}`)}
           >
             <Download className="size-3.5" />
@@ -74,7 +105,7 @@ export function CompanyResumeCard({
           <Button
             size="sm"
             variant={resume.coverLetter ? "secondary" : "outline"}
-            className="flex-1 gap-1.5"
+            className="flex-1 gap-1.5 h-8 text-xs"
             onClick={() => router.push(`/dashboard/company-resumes/${resume.id}/cover-letter`)}
           >
             {resume.coverLetter ? (
@@ -85,7 +116,7 @@ export function CompanyResumeCard({
             ) : (
               <>
                 <Sparkles className="size-3.5" />
-                Cover Letter
+                Generate
               </>
             )}
           </Button>
@@ -96,13 +127,13 @@ export function CompanyResumeCard({
             render={
               <Button
                 size="sm"
-                variant="outline"
-                className="w-full gap-1.5 text-destructive hover:text-destructive"
+                variant="ghost"
+                className="w-full gap-1.5 h-7 text-[11px] text-muted-foreground hover:text-destructive hover:bg-destructive/8"
               />
             }
           >
-            <Trash2 className="size-3.5" />
-            Delete Resume
+            <Trash2 className="size-3" />
+            Delete
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -125,6 +156,6 @@ export function CompanyResumeCard({
           </AlertDialogContent>
         </AlertDialog>
       </div>
-    </div>
+    </motion.div>
   );
 }

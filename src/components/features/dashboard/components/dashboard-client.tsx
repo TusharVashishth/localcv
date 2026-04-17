@@ -20,11 +20,13 @@ import {
   UserCheck,
   Download,
   Upload,
-  Database,
-  ArrowRight,
   CheckCircle2,
   Lock,
   Zap,
+  ShieldCheck,
+  HardDrive,
+  MailOpen,
+  ChevronRight,
 } from "lucide-react";
 import { ApiKeyDialog } from "./api-key-dialog";
 import { ImportDataDialog } from "./import-data-dialog";
@@ -35,31 +37,89 @@ import { useProfile } from "@/components/features/profile/hooks/use-profile";
 const STEPS = [
   {
     step: "01",
-    title: "Build Profile",
+    title: "Build Your Profile",
     description:
-      "Add your work history, skills, and education once — reuse forever.",
+      "Add work history, skills, and education once — reuse across every resume forever.",
     icon: UserCheck,
-    gradient: "from-blue-500/15 via-cyan-500/10 to-transparent",
-    borderColor: "border-blue-200/60 dark:border-blue-800/40",
-    iconGradient: "from-blue-500 to-cyan-500",
-    textAccent: "text-blue-600 dark:text-blue-400",
-    hoverShadow:
-      "hover:shadow-[0_8px_30px_rgba(59,130,246,0.2)] dark:hover:shadow-[0_8px_30px_rgba(59,130,246,0.15)]",
+    accent: "teal",
+    gradient: "from-primary/12 via-primary/5 to-transparent",
+    border: "border-primary/20 dark:border-primary/15",
+    iconBg: "from-primary to-emerald-500",
+    iconShadow: "shadow-primary/25",
+    badgeClass:
+      "bg-primary/10 text-primary border-primary/20 dark:border-primary/30",
+    textAccent: "text-primary",
+    stepColor: "text-primary/20 dark:text-primary/15",
   },
   {
     step: "02",
     title: "Pick Template & Build Resume",
-    description: "Choose from Classic, Modern, Technical, Executive and more.",
+    description:
+      "Choose from Classic, Modern, Technical, Executive and more — export as PDF instantly.",
     icon: FileText,
-    gradient: "from-violet-500/15 via-purple-500/10 to-transparent",
-    borderColor: "border-violet-200/60 dark:border-violet-800/40",
-    iconGradient: "from-violet-500 to-purple-500",
+    accent: "violet",
+    gradient: "from-violet-500/12 via-violet-500/5 to-transparent",
+    border: "border-violet-500/20 dark:border-violet-500/15",
+    iconBg: "from-violet-500 to-purple-600",
+    iconShadow: "shadow-violet-500/25",
+    badgeClass:
+      "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20",
     textAccent: "text-violet-600 dark:text-violet-400",
-    hoverShadow:
-      "hover:shadow-[0_8px_30px_rgba(139,92,246,0.2)] dark:hover:shadow-[0_8px_30px_rgba(139,92,246,0.15)]",
+    stepColor: "text-violet-500/20 dark:text-violet-400/15",
   },
 ] as const;
 
+/* ****** AI feature cards ****** */
+const AI_FEATURES = [
+  {
+    key: "company",
+    title: "Company-wise Resume",
+    description:
+      "Generate AI-tailored resumes targeted to specific companies and role requirements.",
+    icon: BriefcaseBusiness,
+    iconBg: "from-violet-500 to-pink-500",
+    iconShadow: "shadow-violet-500/30",
+    gradient: "from-violet-500/8 via-pink-500/5 to-transparent",
+    border: "border-violet-200/60 dark:border-violet-800/30",
+    badge:
+      "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20",
+    glow: "bg-pink-500/8 dark:bg-pink-500/5",
+    route: "/dashboard/company-resumes",
+    label: "Open Company Resumes",
+  },
+  {
+    key: "ats",
+    title: "ATS Score Checker",
+    description:
+      "Paste a job description to get ATS compatibility score, keyword gaps, and fix suggestions.",
+    icon: Target,
+    iconBg: "from-emerald-500 to-teal-500",
+    iconShadow: "shadow-emerald-500/30",
+    gradient: "from-emerald-500/8 via-teal-500/5 to-transparent",
+    border: "border-emerald-200/60 dark:border-emerald-800/30",
+    badge:
+      "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+    glow: "bg-teal-500/8 dark:bg-teal-500/5",
+    route: "/dashboard/ats-scorer",
+    label: "Check ATS Score",
+  },
+  {
+    key: "cover",
+    title: "Cover Letter Generator",
+    description:
+      "Craft personalised, compelling cover letters for any job in seconds using AI.",
+    icon: MailOpen,
+    iconBg: "from-orange-500 to-amber-500",
+    iconShadow: "shadow-orange-500/30",
+    gradient: "from-orange-500/8 via-amber-500/5 to-transparent",
+    border: "border-orange-200/60 dark:border-orange-800/30",
+    badge:
+      "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
+    glow: "bg-amber-500/8 dark:bg-amber-500/5",
+    route: "/dashboard/company-resumes",
+    label: "Generate Cover Letter",
+  },
+] as const;
 
 export function DashboardClient() {
   const router = useRouter();
@@ -96,7 +156,6 @@ export function DashboardClient() {
       setInitialModel("");
       setInitialApiKey("");
     }
-
     setIsApiDialogOpen(true);
   }, [hasApiKey, config, getDecryptedApiKey]);
 
@@ -106,8 +165,6 @@ export function DashboardClient() {
       router.push(
         isProfileCompleted ? "/dashboard/builder" : "/dashboard/profile",
       );
-    else if (stepIndex === 2 && isProfileCompleted)
-      router.push("/dashboard/builder");
   }
 
   function stepButtonLabel(stepIndex: number) {
@@ -115,11 +172,11 @@ export function DashboardClient() {
       return isProfileCompleted ? "Edit Profile" : "Start Profile";
     if (stepIndex === 1)
       return isProfileCompleted ? "Browse Templates" : "Complete Profile First";
-    return isProfileCompleted ? "Export Resume" : "Complete Profile First";
+    return "Complete Profile First";
   }
 
   function isStepDisabled(stepIndex: number) {
-    return stepIndex === 2 && !isProfileCompleted;
+    return stepIndex === 1 && !isProfileCompleted;
   }
 
   function isStepDone(stepIndex: number) {
@@ -129,18 +186,15 @@ export function DashboardClient() {
   const handleExportData = useCallback(async () => {
     try {
       setIsExporting(true);
-
       const payload = await createLocalDataExport();
       const json = JSON.stringify(payload, null, 2);
       const blob = new Blob([json], { type: "application/json" });
       const url = URL.createObjectURL(blob);
-
       const anchor = document.createElement("a");
       const dateToken = new Date().toISOString().replace(/[:.]/g, "-");
       anchor.href = url;
       anchor.download = `localcv-backup-${dateToken}.json`;
       anchor.click();
-
       URL.revokeObjectURL(url);
       toast.success("Local data exported as JSON.");
     } catch {
@@ -149,6 +203,8 @@ export function DashboardClient() {
       setIsExporting(false);
     }
   }, []);
+
+  const completionPercent = isProfileCompleted ? (hasApiKey ? 100 : 66) : 33;
 
   return (
     <div className="min-h-screen bg-background">
@@ -165,208 +221,215 @@ export function DashboardClient() {
         onOpenChange={setIsImportDialogOpen}
       />
 
-      <main className="container mx-auto px-6 py-8 space-y-10">
+      <main className="container mx-auto px-4 sm:px-6 py-8 space-y-8 max-w-5xl">
         {/* ****** Hero header ****** */}
         <BlurFade delay={0} direction="up">
-          <div className="relative overflow-hidden rounded-2xl border bg-linear-to-br from-primary/8 via-violet-500/5 to-background p-6 md:p-8">
-            {/* Animated border beam */}
+          <div className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-primary/10 via-primary/4 to-background border-primary/20 dark:border-primary/15 p-6 md:p-8">
             <BorderBeam
-              colorFrom="#a855f7"
-              colorTo="#6366f1"
-              duration={5}
+              colorFrom="#2dd4bf"
+              colorTo="#818cf8"
+              duration={6}
               borderWidth={1.5}
             />
 
             {/* Ambient blobs */}
-            <div className="pointer-events-none absolute -right-12 -top-12 size-48 rounded-full bg-primary/10 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-8 left-20 size-32 rounded-full bg-violet-500/10 blur-3xl" />
+            <div className="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-primary/8 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-12 left-16 size-40 rounded-full bg-violet-500/8 blur-3xl" />
 
-            <div className="relative flex flex-col md:flex-row md:items-center gap-4">
+            <div className="relative flex flex-col lg:flex-row lg:items-center gap-6">
+              {/* Left: title + badges */}
               <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <span className="text-2xl font-bold tracking-tight bg-linear-to-r from-primary to-violet-600 bg-clip-text text-transparent">
+                <div className="flex flex-wrap items-center gap-2.5 mb-3">
+                  <h1 className="text-2xl md:text-3xl font-bold tracking-tight bg-gradient-to-r from-primary via-primary/80 to-violet-500 bg-clip-text text-transparent">
                     Build your perfect resume
-                  </span>
-                  {hasApiKey && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{
-                        delay: 0.4,
-                        type: "spring",
-                        stiffness: 300,
-                      }}
-                      className="flex items-center gap-2"
-                    >
-                      <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 text-[10px] gap-1">
-                        <Sparkles className="size-2.5" />
-                        AI Ready
-                      </Badge>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-7 text-xs px-3"
-                        onClick={openApiDialog}
-                      >
-                        Manage Key
-                      </Button>
-                    </motion.div>
-                  )}
+                  </h1>
+                  <Badge className="bg-primary/10 text-primary border-primary/25 text-[10px] gap-1 shrink-0">
+                    <ShieldCheck className="size-3" />
+                    100% Local
+                  </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground max-w-md">
-                  Three steps to a professional, ATS-optimised resume — all
-                  stored privately on your device.
+                <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
+                  Privacy-first AI resume builder — your data never leaves your
+                  device.
                 </p>
+
+                {/* Progress indicator */}
+                <div className="mt-4 flex items-center gap-3">
+                  <div className="flex-1 max-w-[180px] h-1.5 rounded-full bg-muted overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${completionPercent}%` }}
+                      transition={{
+                        duration: 0.8,
+                        delay: 0.3,
+                        ease: "easeOut",
+                      }}
+                      className="h-full rounded-full bg-gradient-to-r from-primary to-emerald-400"
+                    />
+                  </div>
+                  <span className="text-xs text-muted-foreground font-medium">
+                    {completionPercent}% setup complete
+                  </span>
+                </div>
               </div>
 
-              {!hasApiKey && (
-                <motion.div
-                  initial={{ opacity: 0, x: 12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.35, duration: 0.4, ease: "easeOut" }}
-                  className="shrink-0 flex items-center gap-2 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-950/30 px-4 py-3"
-                >
-                  <KeyRound className="size-4 text-amber-600 dark:text-amber-400 shrink-0" />
-                  <div className="min-w-0">
-                    <p className="text-xs font-medium text-amber-800 dark:text-amber-200">
-                      No AI key configured
-                    </p>
-                    <p className="text-[11px] text-amber-600 dark:text-amber-400">
-                      Add a key to unlock AI features.
-                    </p>
-                  </div>
-                  <Button
-                    size="sm"
-                    onClick={openApiDialog}
-                    className="ml-2 shrink-0 bg-amber-500 hover:bg-amber-600 text-white h-7 text-xs px-3"
+              {/* Right: AI key status */}
+              <div className="shrink-0">
+                {hasApiKey ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.35, duration: 0.4 }}
+                    className="flex items-center gap-3 rounded-xl border border-primary/20 dark:border-primary/15 bg-primary/6 dark:bg-primary/8 px-4 py-3"
                   >
-                    Add Key
-                  </Button>
-                </motion.div>
-              )}
+                    <div className="flex items-center justify-center size-8 rounded-lg bg-primary/15 text-primary">
+                      <Sparkles className="size-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-primary">
+                        AI Ready
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {config?.provider ?? "Configured"}
+                      </p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="ml-1 h-7 text-xs px-3"
+                      onClick={openApiDialog}
+                    >
+                      Manage
+                    </Button>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.35, duration: 0.4 }}
+                    className="flex items-center gap-3 rounded-xl border border-amber-200 dark:border-amber-800/60 bg-amber-50/80 dark:bg-amber-950/25 px-4 py-3"
+                  >
+                    <div className="flex items-center justify-center size-8 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400">
+                      <KeyRound className="size-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-amber-800 dark:text-amber-200">
+                        No AI key
+                      </p>
+                      <p className="text-[11px] text-amber-600 dark:text-amber-400">
+                        Required for AI features
+                      </p>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={openApiDialog}
+                      className="ml-1 h-7 text-xs px-3 bg-amber-500 hover:bg-amber-600 text-white border-0"
+                    >
+                      Add Key
+                    </Button>
+                  </motion.div>
+                )}
+              </div>
             </div>
           </div>
         </BlurFade>
 
-        {/* ****** Backup section ****** */}
-        <BlurFade delay={0.08} direction="up">
-          <section className="rounded-xl border bg-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 transition-shadow hover:shadow-md">
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="flex items-center justify-center size-9 rounded-lg bg-primary/10 text-primary shrink-0">
-                <Database className="size-4" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold">Backup Your Local Data</p>
-                <p className="text-xs text-muted-foreground">
-                  Export your local profile and AI settings to JSON, or import a
-                  previous backup.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              <Button
-                size="sm"
-                variant="outline"
-                className="gap-1.5"
-                onClick={() => setIsImportDialogOpen(true)}
-              >
-                <Upload className="size-3.5" />
-                Import JSON
-              </Button>
-              <Button
-                size="sm"
-                className="gap-1.5"
-                onClick={handleExportData}
-                disabled={isExporting}
-              >
-                <Download className="size-3.5" />
-                {isExporting ? "Exporting..." : "Export JSON"}
-              </Button>
-            </div>
-          </section>
-        </BlurFade>
-
-        {/* ****** 2-step cards ****** */}
-        <BlurFade delay={0.14} direction="up">
+        {/* ****** Get Started steps ****** */}
+        <BlurFade delay={0.1} direction="up">
           <section>
-            <div className="flex items-center gap-2 mb-5">
-              <h2 className="text-base font-semibold">Get Started</h2>
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                Get Started
+              </h2>
               <div className="h-px flex-1 bg-border" />
             </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {STEPS.map((s, index) => {
                 const Icon = s.icon;
                 const done = isStepDone(index);
                 const disabled = isStepDisabled(index);
+
                 return (
                   <motion.div
                     key={s.step}
-                    initial={{ opacity: 0, y: 18 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      delay: 0.18 + index * 0.1,
+                      delay: 0.15 + index * 0.08,
                       duration: 0.4,
                       ease: "easeOut",
                     }}
                     whileHover={
                       !disabled
-                        ? { y: -4, transition: { duration: 0.2 } }
+                        ? { y: -3, transition: { duration: 0.18 } }
                         : undefined
                     }
-                    className={`relative overflow-hidden rounded-xl border bg-linear-to-br ${s.gradient} ${s.borderColor} ${s.hoverShadow} p-5 flex flex-col gap-4 transition-shadow`}
+                    className={`group relative overflow-hidden rounded-xl border bg-gradient-to-br ${s.gradient} ${s.border} p-5 flex flex-col gap-4 transition-all duration-200 ${
+                      !disabled
+                        ? "cursor-pointer hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20"
+                        : "opacity-60"
+                    }`}
+                    onClick={
+                      !disabled ? () => handleStepClick(index) : undefined
+                    }
                   >
-                    {/* Step number watermark */}
+                    {/* Step watermark */}
                     <span
-                      className={`absolute top-4 right-4 text-3xl font-black opacity-10 ${s.textAccent}`}
+                      className={`absolute top-4 right-4 text-5xl font-black ${s.stepColor} select-none transition-transform duration-300 group-hover:scale-110`}
                     >
                       {s.step}
                     </span>
 
                     <div className="flex items-center gap-3">
                       <motion.div
-                        whileHover={{ scale: 1.08 }}
+                        whileHover={{ scale: 1.08, rotate: -4 }}
                         transition={{ duration: 0.15 }}
-                        className={`flex items-center justify-center size-10 rounded-xl bg-linear-to-br ${s.iconGradient} text-white shadow-sm shrink-0`}
+                        className={`flex items-center justify-center size-10 rounded-xl bg-gradient-to-br ${s.iconBg} text-white shadow-md ${s.iconShadow} shrink-0`}
                       >
                         <Icon className="size-5" />
                       </motion.div>
-                      {done && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: "spring", stiffness: 400 }}
-                        >
-                          <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 text-[10px] gap-1 h-5">
-                            <CheckCircle2 className="size-2.5" />
-                            Done
-                          </Badge>
-                        </motion.div>
-                      )}
-                      {disabled && !done && (
-                        <Lock className="size-3.5 text-muted-foreground" />
-                      )}
+
+                      <div className="flex items-center gap-2">
+                        {done && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 400 }}
+                          >
+                            <Badge className="bg-emerald-500/12 text-emerald-600 dark:text-emerald-400 border-emerald-200/60 dark:border-emerald-800/40 text-[10px] gap-1 h-5">
+                              <CheckCircle2 className="size-2.5" />
+                              Complete
+                            </Badge>
+                          </motion.div>
+                        )}
+                        {disabled && (
+                          <Lock className="size-3.5 text-muted-foreground" />
+                        )}
+                      </div>
                     </div>
 
-                    <div className="flex-1">
+                    <div className="flex-1 relative">
                       <p className="font-semibold text-sm mb-1">{s.title}</p>
                       <p className="text-xs text-muted-foreground leading-relaxed">
                         {s.description}
                       </p>
                     </div>
 
-                    <Button
-                      size="sm"
-                      variant={
-                        done ? "outline" : disabled ? "ghost" : "default"
-                      }
-                      disabled={disabled}
-                      onClick={() => handleStepClick(index)}
-                      className="w-full gap-1.5"
+                    <div
+                      className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${
+                        done
+                          ? s.textAccent
+                          : disabled
+                            ? "text-muted-foreground"
+                            : s.textAccent
+                      }`}
                     >
                       {stepButtonLabel(index)}
-                      {!disabled && <ArrowRight className="size-3.5" />}
-                    </Button>
+                      {!disabled && (
+                        <ChevronRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+                      )}
+                    </div>
                   </motion.div>
                 );
               })}
@@ -374,96 +437,138 @@ export function DashboardClient() {
           </section>
         </BlurFade>
 
-        {/* ****** Company Resumes feature section ****** */}
-        <BlurFade delay={0.22} direction="up">
-          <section className="relative overflow-hidden rounded-xl border bg-linear-to-br from-violet-500/10 via-pink-500/5 to-transparent border-violet-200/50 dark:border-violet-800/30 p-5 flex flex-col sm:flex-row sm:items-center gap-4 transition-shadow hover:shadow-md hover:shadow-violet-500/10">
-            {/* Subtle ambient glow */}
-            <div className="pointer-events-none absolute -right-8 -top-8 size-32 rounded-full bg-pink-500/10 blur-2xl" />
-
-            <div className="flex items-center gap-4 flex-1 min-w-0 relative">
-              <motion.div
-                whileHover={{ scale: 1.08, rotate: -3 }}
-                transition={{ duration: 0.2 }}
-                className="flex items-center justify-center size-10 rounded-xl bg-linear-to-br from-violet-500 to-pink-500 text-white shrink-0 shadow-sm shadow-violet-500/30"
-              >
-                <BriefcaseBusiness className="size-5" />
-              </motion.div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <p className="text-sm font-semibold">Company-wise Resume</p>
-                  <Badge className="bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-200/50 dark:border-violet-800/40 text-[10px] gap-1 h-5">
-                    <Zap className="size-2.5" />
-                    AI Powered
-                  </Badge>
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Create AI-tailored resumes targeted to specific companies and
-                  role requirements.
-                </p>
-              </div>
+        {/* ****** AI Feature cards ****** */}
+        <BlurFade delay={0.2} direction="up">
+          <section>
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                AI Features
+              </h2>
+              <div className="h-px flex-1 bg-border" />
+              {!hasApiKey && (
+                <button
+                  onClick={openApiDialog}
+                  className="text-xs text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 shrink-0"
+                >
+                  <KeyRound className="size-3" /> Add AI key to unlock
+                </button>
+              )}
             </div>
 
-            <Button
-              size="sm"
-              className="shrink-0 gap-1.5 relative"
-              disabled={!isProfileCompleted || !hasApiKey}
-              onClick={() => router.push("/dashboard/company-resumes")}
-            >
-              {!isProfileCompleted
-                ? "Complete Profile First"
-                : !hasApiKey
-                  ? "Add AI Key First"
-                  : "Open Company Resumes"}
-              {isProfileCompleted && hasApiKey && (
-                <ArrowRight className="size-3.5" />
-              )}
-            </Button>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {AI_FEATURES.map((f, index) => {
+                const Icon = f.icon;
+                const locked = !isProfileCompleted || !hasApiKey;
+
+                return (
+                  <motion.div
+                    key={f.key}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: 0.25 + index * 0.07,
+                      duration: 0.4,
+                      ease: "easeOut",
+                    }}
+                    whileHover={
+                      !locked
+                        ? { y: -3, transition: { duration: 0.18 } }
+                        : undefined
+                    }
+                    className={`group relative overflow-hidden rounded-xl border bg-gradient-to-br ${f.gradient} ${f.border} p-5 flex flex-col gap-3.5 transition-all duration-200 ${
+                      !locked
+                        ? "cursor-pointer hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20"
+                        : "opacity-55"
+                    }`}
+                    onClick={!locked ? () => router.push(f.route) : undefined}
+                  >
+                    {/* Ambient glow */}
+                    <div
+                      className={`pointer-events-none absolute -right-6 -top-6 size-24 rounded-full ${f.glow} blur-2xl`}
+                    />
+
+                    <div className="flex items-start justify-between gap-2 relative">
+                      <motion.div
+                        whileHover={{ scale: 1.08, rotate: -4 }}
+                        transition={{ duration: 0.15 }}
+                        className={`flex items-center justify-center size-10 rounded-xl bg-gradient-to-br ${f.iconBg} text-white shrink-0 shadow-md ${f.iconShadow}`}
+                      >
+                        <Icon className="size-5" />
+                      </motion.div>
+
+                      {locked ? (
+                        <Lock className="size-3.5 text-muted-foreground shrink-0 mt-1" />
+                      ) : (
+                        <Badge
+                          className={`${f.badge} text-[10px] gap-1 h-5 shrink-0`}
+                        >
+                          <Zap className="size-2.5" />
+                          AI
+                        </Badge>
+                      )}
+                    </div>
+
+                    <div className="relative flex-1">
+                      <p className="text-sm font-semibold mb-1">{f.title}</p>
+                      <p className="text-[11px] text-muted-foreground leading-relaxed">
+                        {f.description}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between relative">
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {!isProfileCompleted
+                          ? "Complete profile first"
+                          : !hasApiKey
+                            ? "Add AI key first"
+                            : f.label}
+                      </span>
+                      {!locked && (
+                        <ChevronRight className="size-3.5 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5" />
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </section>
         </BlurFade>
 
-        {/* ****** ATS Score Checker feature section ****** */}
+        {/* ****** Backup section ****** */}
         <BlurFade delay={0.3} direction="up">
-          <section className="relative overflow-hidden rounded-xl border bg-linear-to-br from-emerald-500/10 via-teal-500/5 to-transparent border-emerald-200/50 dark:border-emerald-800/30 p-5 flex flex-col sm:flex-row sm:items-center gap-4 transition-shadow hover:shadow-md hover:shadow-emerald-500/10">
-            {/* Subtle ambient glow */}
-            <div className="pointer-events-none absolute -right-8 -top-8 size-32 rounded-full bg-teal-500/10 blur-2xl" />
-
-            <div className="flex items-center gap-4 flex-1 min-w-0 relative">
-              <motion.div
-                whileHover={{ scale: 1.08, rotate: -3 }}
-                transition={{ duration: 0.2 }}
-                className="flex items-center justify-center size-10 rounded-xl bg-linear-to-br from-emerald-500 to-teal-500 text-white shrink-0 shadow-sm shadow-emerald-500/30"
-              >
-                <Target className="size-5" />
-              </motion.div>
+          <section className="rounded-xl border bg-muted/30 dark:bg-muted/15 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 transition-shadow hover:shadow-sm">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className="flex items-center justify-center size-8 rounded-lg bg-background border shrink-0">
+                <HardDrive className="size-3.5 text-muted-foreground" />
+              </div>
               <div className="min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <p className="text-sm font-semibold">ATS Score Checker</p>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-800/40 text-[10px] gap-1 h-5">
-                    <Zap className="size-2.5" />
-                    AI Powered
-                  </Badge>
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Paste a job description to get an ATS compatibility score, keyword analysis, and improvement suggestions.
+                <p className="text-sm font-medium">Backup & Restore</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  Export your profile and settings to JSON, or import a backup.
                 </p>
               </div>
             </div>
-
-            <Button
-              size="sm"
-              className="shrink-0 gap-1.5 relative"
-              disabled={!isProfileCompleted || !hasApiKey}
-              onClick={() => router.push("/dashboard/ats-scorer")}
-            >
-              {!isProfileCompleted
-                ? "Complete Profile First"
-                : !hasApiKey
-                  ? "Add AI Key First"
-                  : "Check ATS Score"}
-              {isProfileCompleted && hasApiKey && (
-                <ArrowRight className="size-3.5" />
-              )}
-            </Button>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5 h-8 text-xs"
+                onClick={() => setIsImportDialogOpen(true)}
+              >
+                <Upload className="size-3" />
+                Import
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5 h-8 text-xs"
+                onClick={handleExportData}
+                disabled={isExporting}
+              >
+                <Download className="size-3" />
+                {isExporting ? "Exporting…" : "Export"}
+              </Button>
+            </div>
           </section>
         </BlurFade>
       </main>
