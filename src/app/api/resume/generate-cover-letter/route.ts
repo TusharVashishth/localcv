@@ -1,7 +1,7 @@
 import { RequestContext } from "@mastra/core/request-context";
 import { NextResponse } from "next/server";
-import { atsScorerAgent, atsScoreOutputSchema } from "@/mastra/agents/ats-scorer-agent";
-import { atsScoreRequestSchema } from "@/lib/validations/ats-score-validation";
+import { coverLetterAgent, coverLetterOutputSchema } from "@/mastra/agents/cover-letter-agent";
+import { generateCoverLetterSchema } from "@/lib/validations/cover-letter-validation";
 
 
 export async function POST(request: Request) {
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
             );
         }
 
-        const parsed = atsScoreRequestSchema.safeParse(body);
+        const parsed = generateCoverLetterSchema.safeParse(body);
 
         if (!parsed.success) {
             return NextResponse.json(
@@ -28,30 +28,35 @@ export async function POST(request: Request) {
             );
         }
 
-        const { jobTitle, jobDescription, profileData, config } = parsed.data;
+        const { companyName, jobDescription, profileData, config } = parsed.data;
 
         const requestContext = new RequestContext();
         requestContext.set("provider", config.provider);
         requestContext.set("modelName", config.modelName);
         requestContext.set("apiKey", config.apiKey);
 
-        const jobContext = jobTitle
-            ? `JOB TITLE: ${jobTitle}\n\nJOB DESCRIPTION:\n${jobDescription}`
-            : `JOB DESCRIPTION:\n${jobDescription}`;
+        const prompt = `Write a cover letter for the following job application.
 
-        const prompt = `Analyze this resume profile against the following job posting and return an ATS compatibility score with detailed feedback.
+CANDIDATE NAME: ${profileData.profile.fullName}
+COMPANY: ${companyName}
 
-${jobContext}
+JOB DESCRIPTION:
+${jobDescription}
 
-CANDIDATE PROFILE (JSON):
-${JSON.stringify(profileData, null, 2)}
+CANDIDATE PROFILE (JSON — use only the facts present here, never fabricate):
+${JSON.stringify({
+            summary: profileData.summary,
+            skills: profileData.skills,
+            experience: profileData.experience,
+            projects: profileData.projects,
+        }, null, 2)}
 
-Score the resume honestly and return complete JSON matching the requested schema.`;
+Return the cover letter JSON strictly matching the requested schema.`;
 
-        const result = await atsScorerAgent.generate(prompt, {
+        const result = await coverLetterAgent.generate(prompt, {
             requestContext,
             structuredOutput: {
-                schema: atsScoreOutputSchema,
+                schema: coverLetterOutputSchema,
                 jsonPromptInjection: true,
             },
             modelSettings: {
@@ -60,16 +65,16 @@ Score the resume honestly and return complete JSON matching the requested schema
             },
         });
 
-        const analysis = result.object;
+        const coverLetter = result.object;
 
-        if (!analysis) {
+        if (!coverLetter) {
             return NextResponse.json(
                 { success: false, error: "The AI model did not return a valid response. Please retry." },
                 { status: 500 },
             );
         }
 
-        return NextResponse.json({ success: true, analysis });
+        return NextResponse.json({ success: true, coverLetter });
     } catch (error) {
         const message = error instanceof Error ? error.message : "";
 
@@ -88,7 +93,7 @@ Score the resume honestly and return complete JSON matching the requested schema
         }
 
         return NextResponse.json(
-            { success: false, error: "Failed to analyze resume. Please try again." },
+            { success: false, error: "Failed to generate cover letter. Please try again." },
             { status: 500 },
         );
     }

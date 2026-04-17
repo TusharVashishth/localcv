@@ -106,6 +106,24 @@ export interface ATSResult {
     createdAt: Date;
 }
 
+export interface CoverLetterContent {
+    salutation: string;
+    openingParagraph: string;
+    bodyParagraphs: string[];
+    closingParagraph: string;
+    signature: string;
+    generatedAt: Date;
+}
+
+export interface CoverLetterStyleConfig {
+    fontFamily: string;
+    fontFamilyValue?: string;
+    fontSize: "small" | "medium" | "large";
+    textColor: string;
+    accentColor: string;
+    template: string;
+}
+
 export interface CompanyResume {
     id?: number;
     companyName: string;
@@ -118,6 +136,8 @@ export interface CompanyResume {
     projects: Projects[];
     certifications: Certification[];
     languages: LanguageSkill[];
+    coverLetter?: CoverLetterContent;
+    coverLetterStyle?: CoverLetterStyleConfig;
     createdAt: Date;
     updatedAt: Date;
 }
