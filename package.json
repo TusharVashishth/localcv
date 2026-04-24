@@ -22,6 +22,7 @@
     "@mastra/loggers": "^1.0.2",
     "@mastra/memory": "^1.5.2",
     "@mastra/observability": "^1.2.1",
+    "@react-oauth/google": "^0.13.5",
     "ai": "^6.0.105",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

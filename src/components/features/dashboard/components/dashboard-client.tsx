@@ -27,11 +27,14 @@ import {
   HardDrive,
   MailOpen,
   ChevronRight,
+  Cloud,
 } from "lucide-react";
 import { ApiKeyDialog } from "./api-key-dialog";
 import { ImportDataDialog } from "./import-data-dialog";
 import { useAIConfig } from "../hooks/use-ai-config";
 import { useProfile } from "@/components/features/profile/hooks/use-profile";
+
+import { GoogleDriveSyncButton } from "./google-drive-sync-button";
 
 /* ****** Step card data ****** */
 const STEPS = [
@@ -568,6 +571,26 @@ export function DashboardClient() {
                 <Download className="size-3" />
                 {isExporting ? "Exporting…" : "Export"}
               </Button>
+            </div>
+          </section>
+        </BlurFade>
+
+        {/* ****** Cloud Sync section ****** */}
+        <BlurFade delay={0.4} direction="up">
+          <section className="rounded-xl border bg-indigo-50/30 dark:bg-indigo-950/20 border-indigo-100 dark:border-indigo-900/30 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 transition-shadow hover:shadow-sm mt-4">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className="flex items-center justify-center size-8 rounded-lg bg-background border border-indigo-200 dark:border-indigo-800 shrink-0">
+                <Cloud className="size-3.5 text-indigo-500" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-indigo-900 dark:text-indigo-200">Cloud Sync</p>
+                <p className="text-xs text-indigo-700/70 dark:text-indigo-300/70 truncate">
+                  Automatically sync your data to your personal Google Drive for multi-device access.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <GoogleDriveSyncButton />
             </div>
           </section>
         </BlurFade>

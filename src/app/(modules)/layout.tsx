@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { FileText, UserRound } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-
+import { GoogleOAuthProviderWrapper } from "@/components/shared/google-oauth-provider-wrapper";
 export default function modulesLayout({
   children,
 }: {
@@ -49,7 +49,9 @@ export default function modulesLayout({
         <ProfileCompletionBanner />
       </section>
 
-      {children}
+      <GoogleOAuthProviderWrapper>
+        {children}
+      </GoogleOAuthProviderWrapper>
     </main>
   );
 }
