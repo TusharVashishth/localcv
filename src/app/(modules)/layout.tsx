@@ -1,7 +1,7 @@
 import { ModeToggle } from "@/components/shared/mode-toggle";
 import { ProfileCompletionBanner } from "@/components/features/profile/components/profile-completion-banner";
 import { Button } from "@/components/ui/button";
-import { FileText, UserRound, BriefcaseBusiness } from "lucide-react";
+import { UserRound, BriefcaseBusiness } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import type { Metadata } from "next";
@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   },
 };
 
+import { GoogleOAuthProviderWrapper } from "@/components/shared/google-oauth-provider-wrapper";
 export default function modulesLayout({
   children,
 }: {
@@ -75,7 +76,7 @@ export default function modulesLayout({
         <ProfileCompletionBanner />
       </section>
 
-      {children}
+      <GoogleOAuthProviderWrapper>{children}</GoogleOAuthProviderWrapper>
     </main>
   );
 }
