@@ -1,6 +1,6 @@
 # localCV
 
-LocalCV is an open source, local-first AI resume maker built for people who want a faster way to create ATS-ready resumes without giving up control of their data.
+LocalCV is an open source, local-first AI resume maker and cover letter generator built for people who want a faster way to create ATS-ready resumes without giving up control of their data.
 
 Live app: https://localcv.tusharvashishth.com
 
@@ -26,6 +26,9 @@ localCV takes a different approach:
 - Choose from 8 resume templates: Classic, Modern, Minimal, Executive, Technical, Sidebar Color, With Photo, and Creative
 - Preview changes instantly before export
 - Generate job-specific resume variants with minimal effort
+- Generate tailored cover letters for any job by pasting the job description
+- Choose from 4 cover letter templates: Clean, Professional, Bold, and Elegant
+- Customise cover letter font, size, accent colour, and export as PDF
 - Parse existing CV content to speed up profile creation
 
 ## Quick Start
@@ -72,6 +75,7 @@ These values are required for saving and decrypting user-provided AI API keys. C
 2. Pick a resume template that matches the role you are targeting.
 3. Connect your AI provider and improve summaries or bullet points.
 4. Export a cleaner, role-specific resume in minutes.
+5. Generate a tailored cover letter for the same role — paste the job description and let the AI write a first draft based on your profile.
 
 ## Core Features
 
@@ -90,6 +94,10 @@ Instead of trying to replace the user, localCV uses AI to improve raw experience
 ### Ready-to-use templates
 
 The template gallery includes traditional, modern, executive, technical, and creative layouts so users can tailor their resume to different industries and roles.
+
+### Cover letter generation
+
+From any job-specific resume variant, users can generate an AI-written cover letter tailored to the target company and job description. The cover letter builder offers 4 templates (Clean, Professional, Bold, Elegant) with full style control — font family, size, accent colour, and text colour — and exports to PDF. All content is derived from the user's profile and never stored externally.
 
 ## Tech Stack
 
