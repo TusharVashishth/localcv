@@ -5,6 +5,22 @@ import { FileText, UserRound } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { GoogleOAuthProviderWrapper } from "@/components/shared/google-oauth-provider-wrapper";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+      "max-image-preview": "none",
+      "max-video-preview": -1,
+      "max-snippet": -1,
+    },
+  },
+};
+
 export default function modulesLayout({
   children,
 }: {
@@ -49,9 +65,7 @@ export default function modulesLayout({
         <ProfileCompletionBanner />
       </section>
 
-      <GoogleOAuthProviderWrapper>
-        {children}
-      </GoogleOAuthProviderWrapper>
+      <GoogleOAuthProviderWrapper>{children}</GoogleOAuthProviderWrapper>
     </main>
   );
 }

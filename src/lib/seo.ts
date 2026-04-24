@@ -16,7 +16,7 @@ export const seoConfig = {
     defaultTitle: "Free ATS-Optimized Resume Builder",
     defaultDescription:
         "Build ATS-ready resumes with a local-first, privacy-focused resume builder. Create, refine, and export role-specific resumes in minutes.",
-    defaultOgImage: "/opengraph-image",
+    defaultOgImage: "/og-image.png",
     defaultKeywords: [
         "resume builder",
         "ATS resume",

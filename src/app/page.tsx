@@ -22,9 +22,41 @@ export const metadata = buildPageMetadata({
   ],
 });
 
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      name: "localCV",
+      url: "https://localcv.tusharvashishth.com",
+      description:
+        "Build ATS-ready resumes for free with local-first privacy, modern templates, and AI-assisted refinements tailored to your target role.",
+      inLanguage: "en",
+    },
+    {
+      "@type": "SoftwareApplication",
+      name: "localCV",
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+      },
+      description:
+        "A local-first, privacy-focused AI resume maker with ATS optimization.",
+      url: "https://localcv.tusharvashishth.com",
+    },
+  ],
+};
+
 export default function Page() {
   return (
     <main className="min-h-screen bg-background text-foreground transition-colors">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <div className="flex justify-between items-center px-4 py-1">
         <div className="bg-primary rounded-md p-1.5 ">
           <FileText className="size-4 text-primary-foreground" />

@@ -1,24 +1,43 @@
 # localCV
 
-localCV is an open source, local-first, privacy-focused AI resume builder.
+localCV is an open source, local-first, privacy-focused AI resume builder with cover letter generation.
 
 Primary URL: https://localcv.tusharvashishth.com/
 
 ## Product summary
 - Build ATS-ready resumes without signup or paywall.
-- Keep resume data local-first on the user's device.
-- Use AI-assisted refinement for summaries and bullet points.
-- Choose from multiple modern resume templates.
+- Keep all resume and cover letter data local-first on the user's device.
+- Use AI-assisted refinement for summaries, bullet points, and cover letters.
+- Choose from multiple modern resume templates and cover letter templates.
+- Generate tailored cover letters for any job by providing the job description.
 
 ## Important routes
 - / : Marketing and product overview page.
 - /dashboard : Resume workspace and management.
 - /dashboard/builder : Main resume editing and preview experience.
 - /dashboard/profile : User profile data used across resume templates.
+- /dashboard/ats-scorer : Score and compare a resume against a job description.
+- /dashboard/company-resumes : Manage job-specific resume and cover letter variants.
+- /dashboard/company-resumes/[id] : View a specific job-targeted resume variant.
+- /dashboard/company-resumes/[id]/cover-letter : AI-generated cover letter builder for a specific job.
+
+## Modules
+### Resume Builder
+Create and edit resumes using a local profile. Supports 8 templates: Classic, Modern, Minimal, Executive, Technical, Sidebar Color, With Photo, and Creative. Export as PDF.
+
+### ATS Scorer
+Paste a job description alongside a resume to receive an ATS compatibility score and keyword gap analysis.
+
+### Company Resumes
+Generate and store tailored resume variants targeted at specific companies and roles. Each variant is derived from the user's base profile.
+
+### Cover Letter Builder
+Generate AI-written cover letters tailored to a target company and job description. Supports 4 templates (Clean, Professional, Bold, Elegant) with customisable font, font size, accent colour, and text colour. Export as PDF. Accessible from within each company-resume variant.
 
 ## Crawl guidance
-- Prefer the landing page as canonical product context.
-- Treat dashboard routes as product application surfaces.
+- Prefer the landing page (/) as the canonical product context for indexing.
+- Dashboard routes are private application surfaces — do not index them.
+- The /api path is server-only and should not be crawled.
 - Ignore /test, which is an internal testing route.
 
 ## Tech context
@@ -26,4 +45,5 @@ Primary URL: https://localcv.tusharvashishth.com/
 - Language: TypeScript
 - UI: Tailwind CSS + shadcn/ui
 - Storage: IndexedDB via Dexie
+- AI: Mastra SDK with bring-your-own provider (OpenAI, Anthropic, Google, etc.)
 - Validation: Zod
