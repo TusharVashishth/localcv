@@ -12,12 +12,8 @@ import { BlurFade } from "@/components/ui/blur-fade";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { createLocalDataExport } from "@/lib/db/import-export";
 import {
-  FileText,
-  Target,
-  BriefcaseBusiness,
   KeyRound,
   Sparkles,
-  UserCheck,
   Download,
   Upload,
   CheckCircle2,
@@ -25,101 +21,14 @@ import {
   Zap,
   ShieldCheck,
   HardDrive,
-  MailOpen,
   ChevronRight,
 } from "lucide-react";
 import { ApiKeyDialog } from "./api-key-dialog";
+import { GitHubSyncCard } from "./github-sync-card";
 import { ImportDataDialog } from "./import-data-dialog";
 import { useAIConfig } from "../hooks/use-ai-config";
 import { useProfile } from "@/components/features/profile/hooks/use-profile";
-
-/* ****** Step card data ****** */
-const STEPS = [
-  {
-    step: "01",
-    title: "Build Your Profile",
-    description:
-      "Add work history, skills, and education once — reuse across every resume forever.",
-    icon: UserCheck,
-    accent: "teal",
-    gradient: "from-primary/12 via-primary/5 to-transparent",
-    border: "border-primary/20 dark:border-primary/15",
-    iconBg: "from-primary to-emerald-500",
-    iconShadow: "shadow-primary/25",
-    badgeClass:
-      "bg-primary/10 text-primary border-primary/20 dark:border-primary/30",
-    textAccent: "text-primary",
-    stepColor: "text-primary/20 dark:text-primary/15",
-  },
-  {
-    step: "02",
-    title: "Pick Template & Build Resume",
-    description:
-      "Choose from Classic, Modern, Technical, Executive and more — export as PDF instantly.",
-    icon: FileText,
-    accent: "violet",
-    gradient: "from-violet-500/12 via-violet-500/5 to-transparent",
-    border: "border-violet-500/20 dark:border-violet-500/15",
-    iconBg: "from-violet-500 to-purple-600",
-    iconShadow: "shadow-violet-500/25",
-    badgeClass:
-      "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20",
-    textAccent: "text-violet-600 dark:text-violet-400",
-    stepColor: "text-violet-500/20 dark:text-violet-400/15",
-  },
-] as const;
-
-/* ****** AI feature cards ****** */
-const AI_FEATURES = [
-  {
-    key: "company",
-    title: "Company-wise Resume",
-    description:
-      "Generate AI-tailored resumes targeted to specific companies and role requirements.",
-    icon: BriefcaseBusiness,
-    iconBg: "from-violet-500 to-pink-500",
-    iconShadow: "shadow-violet-500/30",
-    gradient: "from-violet-500/8 via-pink-500/5 to-transparent",
-    border: "border-violet-200/60 dark:border-violet-800/30",
-    badge:
-      "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20",
-    glow: "bg-pink-500/8 dark:bg-pink-500/5",
-    route: "/dashboard/company-resumes",
-    label: "Open Company Resumes",
-  },
-  {
-    key: "ats",
-    title: "ATS Score Checker",
-    description:
-      "Paste a job description to get ATS compatibility score, keyword gaps, and fix suggestions.",
-    icon: Target,
-    iconBg: "from-emerald-500 to-teal-500",
-    iconShadow: "shadow-emerald-500/30",
-    gradient: "from-emerald-500/8 via-teal-500/5 to-transparent",
-    border: "border-emerald-200/60 dark:border-emerald-800/30",
-    badge:
-      "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
-    glow: "bg-teal-500/8 dark:bg-teal-500/5",
-    route: "/dashboard/ats-scorer",
-    label: "Check ATS Score",
-  },
-  {
-    key: "cover",
-    title: "Cover Letter Generator",
-    description:
-      "Craft personalised, compelling cover letters for any job in seconds using AI.",
-    icon: MailOpen,
-    iconBg: "from-orange-500 to-amber-500",
-    iconShadow: "shadow-orange-500/30",
-    gradient: "from-orange-500/8 via-amber-500/5 to-transparent",
-    border: "border-orange-200/60 dark:border-orange-800/30",
-    badge:
-      "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
-    glow: "bg-amber-500/8 dark:bg-amber-500/5",
-    route: "/dashboard/company-resumes",
-    label: "Generate Cover Letter",
-  },
-] as const;
+import { AI_FEATURES, STEPS } from "@/lib/dashboard-data";
 
 export function DashboardClient() {
   const router = useRouter();
@@ -156,6 +65,7 @@ export function DashboardClient() {
       setInitialModel("");
       setInitialApiKey("");
     }
+
     setIsApiDialogOpen(true);
   }, [hasApiKey, config, getDecryptedApiKey]);
 
@@ -570,6 +480,10 @@ export function DashboardClient() {
               </Button>
             </div>
           </section>
+        </BlurFade>
+
+        <BlurFade delay={0.35} direction="up">
+          <GitHubSyncCard />
         </BlurFade>
       </main>
     </div>

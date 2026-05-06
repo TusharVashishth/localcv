@@ -79,24 +79,35 @@
     }
   }
 
-  --animate-aurora: aurora 8s ease-in-out infinite alternate
-;
+  --animate-aurora: aurora 8s ease-in-out infinite alternate;
+
   @keyframes aurora {
-  0% {
-    background-position: 0% 50%;
-    transform: rotate(-5deg) scale(0.9);}
-  25% {
-    background-position: 50% 100%;
-    transform: rotate(5deg) scale(1.1);}
-  50% {
-    background-position: 100% 50%;
-    transform: rotate(-3deg) scale(0.95);}
-  75% {
-    background-position: 50% 0%;
-    transform: rotate(3deg) scale(1.05);}
-  100% {
-    background-position: 0% 50%;
-    transform: rotate(-5deg) scale(0.9);}}}
+    0% {
+      background-position: 0% 50%;
+      transform: rotate(-5deg) scale(0.9);
+    }
+
+    25% {
+      background-position: 50% 100%;
+      transform: rotate(5deg) scale(1.1);
+    }
+
+    50% {
+      background-position: 100% 50%;
+      transform: rotate(-3deg) scale(0.95);
+    }
+
+    75% {
+      background-position: 50% 0%;
+      transform: rotate(3deg) scale(1.05);
+    }
+
+    100% {
+      background-position: 0% 50%;
+      transform: rotate(-5deg) scale(0.9);
+    }
+  }
+}
 
 :root {
   --background: oklch(1 0 0);
@@ -105,7 +116,7 @@
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.60 0.13 163);
+  --primary: oklch(60.106% 0.13054 162.685);
   --primary-foreground: oklch(0.98 0.02 166);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);

@@ -1,7 +1,10 @@
 /* ****** Dexie Database Instance ****** */
 
 import Dexie, { type EntityTable } from "dexie";
+import { markGitHubSyncDirty } from "@/lib/github-sync-state";
 import type { AIConfig, ATSResult, CompanyResume, Profile } from "./schema";
+
+let syncHooksRegistered = false;
 
 const db = new Dexie("localcv_db") as Dexie & {
     aiConfigs: EntityTable<AIConfig, "id">;
@@ -28,5 +31,22 @@ db.version(3).stores({
 
 /* ****** v4: additive — coverLetter + coverLetterStyle added to companyResumes (non-indexed fields) ****** */
 db.version(4).stores({});
+
+if (typeof window !== "undefined" && !syncHooksRegistered) {
+    syncHooksRegistered = true;
+
+    [db.profiles, db.companyResumes, db.atsResults].forEach((table) => {
+        table.hook("creating", () => {
+            markGitHubSyncDirty();
+        });
+        table.hook("updating", () => {
+            markGitHubSyncDirty();
+            return undefined;
+        });
+        table.hook("deleting", () => {
+            markGitHubSyncDirty();
+        });
+    });
+}
 
 export { db };

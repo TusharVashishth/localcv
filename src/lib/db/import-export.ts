@@ -213,6 +213,18 @@ const localDataPayloadSchema = z
 
 export type LocalDataPayload = z.infer<typeof localDataPayloadSchema>;
 
+const githubSyncPayloadSchema = z
+    .object({
+        version: z.literal(1),
+        exportedAt: z.iso.datetime(),
+        profiles: z.array(profileSchema),
+        companyResumes: z.array(companyResumeSchema).default([]),
+        atsResults: z.array(atsResultSchema).default([]),
+    })
+    .strict();
+
+export type GitHubSyncPayload = z.infer<typeof githubSyncPayloadSchema>;
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /** Reads all tables and serialises them into a portable export payload. */
@@ -234,9 +246,31 @@ export async function createLocalDataExport(): Promise<LocalDataPayload> {
     };
 }
 
+/** Reads syncable resume data and serialises it for GitHub backup without AI secrets. */
+export async function createGitHubSyncExport(): Promise<GitHubSyncPayload> {
+    const [profiles, companyResumes, atsResults] = await Promise.all([
+        db.profiles.toArray(),
+        db.companyResumes.toArray(),
+        db.atsResults.toArray(),
+    ]);
+
+    return {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        profiles: profiles.map((item) => normalizeProfile(item)),
+        companyResumes: companyResumes.map((item) => normalizeCompanyResume(item)),
+        atsResults: atsResults.map((item) => normalizeAtsResult(item)),
+    };
+}
+
 /** Validates and parses raw JSON into a typed LocalDataPayload; throws on invalid input. */
 export function parseLocalDataImport(raw: unknown): LocalDataPayload {
     return localDataPayloadSchema.parse(raw);
+}
+
+/** Validates and parses GitHub sync payloads. */
+export function parseGitHubSyncImport(raw: unknown): GitHubSyncPayload {
+    return githubSyncPayloadSchema.parse(raw);
 }
 
 /** Validates, clears all tables, then bulk-inserts the imported data in a single transaction. */
@@ -264,6 +298,33 @@ export async function importLocalData(raw: unknown): Promise<void> {
         }
 
         if (parsed.atsResults && parsed.atsResults.length > 0) {
+            await db.atsResults.bulkAdd(
+                parsed.atsResults.map((item) => normalizeAtsResult(item)),
+            );
+        }
+    });
+}
+
+/** Replaces only syncable resume data while preserving local AI configuration. */
+export async function importGitHubSyncData(raw: unknown): Promise<void> {
+    const parsed = parseGitHubSyncImport(raw);
+
+    await db.transaction("rw", db.profiles, db.companyResumes, db.atsResults, async () => {
+        await db.profiles.clear();
+        await db.companyResumes.clear();
+        await db.atsResults.clear();
+
+        if (parsed.profiles.length > 0) {
+            await db.profiles.bulkAdd(parsed.profiles.map((item) => normalizeProfile(item)));
+        }
+
+        if (parsed.companyResumes.length > 0) {
+            await db.companyResumes.bulkAdd(
+                parsed.companyResumes.map((item) => normalizeCompanyResume(item)),
+            );
+        }
+
+        if (parsed.atsResults.length > 0) {
             await db.atsResults.bulkAdd(
                 parsed.atsResults.map((item) => normalizeAtsResult(item)),
             );
