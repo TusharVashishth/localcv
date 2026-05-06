@@ -164,8 +164,8 @@ export function GitHubSyncProvider({ children }: { children: ReactNode }) {
                 }
               : currentStatus.repo,
           remoteBackup: {
-            sha: cachedSyncState.lastRemoteBackupSha,
-            exportedAt: cachedSyncState.lastRemoteBackupAt,
+            sha: cachedSyncState.lastRemoteBackupSha ?? "",
+            exportedAt: cachedSyncState.lastRemoteBackupAt ?? "",
           },
         }));
         return;

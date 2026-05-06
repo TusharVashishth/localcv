@@ -2,6 +2,17 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useGitHubSync } from "./github-sync-provider";
 import { CloudDownload, CloudUpload, Github, RefreshCw } from "lucide-react";
 
@@ -40,19 +51,6 @@ export function GitHubSyncCard() {
     : syncState.lastRemoteBackupAt
       ? "Cached metadata from this device."
       : "No private backup repo connected yet.";
-
-  async function handleRestore() {
-    if (
-      hasLocalData &&
-      !window.confirm(
-        "Restore the latest GitHub backup and replace the current local resume data on this device?",
-      )
-    ) {
-      return;
-    }
-
-    await restoreFromGitHub();
-  }
 
   return (
     <section className="rounded-xl border bg-card p-4 sm:p-5 space-y-4">
@@ -129,7 +127,9 @@ export function GitHubSyncCard() {
             Latest Remote Backup
           </p>
           <p className="text-sm font-medium">{lastRemoteBackupAt}</p>
-          <p className="text-xs text-muted-foreground">{remoteBackupLocation}</p>
+          <p className="text-xs text-muted-foreground">
+            {remoteBackupLocation}
+          </p>
         </div>
         <div className="rounded-lg border bg-muted/20 p-3 space-y-1">
           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -167,16 +167,39 @@ export function GitHubSyncCard() {
           <CloudUpload className="size-3.5" />
           Backup Now
         </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          className="gap-2"
-          onClick={() => void handleRestore()}
-          disabled={isLoadingStatus || isSyncing || !syncStatus.isConfigured}
-        >
-          <CloudDownload className="size-3.5" />
-          Restore Latest
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger
+            render={
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-2"
+                disabled={
+                  isLoadingStatus || isSyncing || !syncStatus.isConfigured
+                }
+              />
+            }
+          >
+            <CloudDownload className="size-3.5" />
+            Restore Latest
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Restore GitHub Backup?</AlertDialogTitle>
+              <AlertDialogDescription>
+                {hasLocalData
+                  ? "This will replace the current local resume data on this device with the latest GitHub backup."
+                  : "This will download the latest GitHub backup to this device."}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={() => void restoreFromGitHub()}>
+                Restore
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </section>
   );
