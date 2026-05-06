@@ -35,6 +35,11 @@ export function GitHubSyncCard() {
 
   const lastRemoteBackupAt = formatDate(syncState.lastRemoteBackupAt);
   const lastLocalSyncAt = formatDate(syncState.lastSyncedAt);
+  const remoteBackupLocation = syncStatus.repo
+    ? `${syncStatus.repo.owner}/${syncStatus.repo.repo}`
+    : syncState.lastRemoteBackupAt
+      ? "Cached metadata from this device."
+      : "No private backup repo connected yet.";
 
   async function handleRestore() {
     if (
@@ -124,11 +129,7 @@ export function GitHubSyncCard() {
             Latest Remote Backup
           </p>
           <p className="text-sm font-medium">{lastRemoteBackupAt}</p>
-          <p className="text-xs text-muted-foreground">
-            {syncStatus.repo
-              ? `${syncStatus.repo.owner}/${syncStatus.repo.repo}`
-              : "No private backup repo connected yet."}
-          </p>
+          <p className="text-xs text-muted-foreground">{remoteBackupLocation}</p>
         </div>
         <div className="rounded-lg border bg-muted/20 p-3 space-y-1">
           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">

@@ -2,6 +2,9 @@ export interface GitHubSyncState {
     dirty: boolean;
     lastRemoteBackupAt: string | null;
     lastRemoteBackupSha: string | null;
+    lastRemoteBackupOwner: string | null;
+    lastRemoteBackupRepo: string | null;
+    lastRemoteBackupUrl: string | null;
     lastSyncedAt: string | null;
     lastSyncedSha: string | null;
 }
@@ -13,6 +16,9 @@ const defaultGitHubSyncState: GitHubSyncState = {
     dirty: false,
     lastRemoteBackupAt: null,
     lastRemoteBackupSha: null,
+    lastRemoteBackupOwner: null,
+    lastRemoteBackupRepo: null,
+    lastRemoteBackupUrl: null,
     lastSyncedAt: null,
     lastSyncedSha: null,
 };
@@ -61,6 +67,15 @@ export function readGitHubSyncState(): GitHubSyncState {
             lastRemoteBackupSha: typeof parsedValue.lastRemoteBackupSha === "string"
                 ? parsedValue.lastRemoteBackupSha
                 : null,
+            lastRemoteBackupOwner: typeof parsedValue.lastRemoteBackupOwner === "string"
+                ? parsedValue.lastRemoteBackupOwner
+                : null,
+            lastRemoteBackupRepo: typeof parsedValue.lastRemoteBackupRepo === "string"
+                ? parsedValue.lastRemoteBackupRepo
+                : null,
+            lastRemoteBackupUrl: typeof parsedValue.lastRemoteBackupUrl === "string"
+                ? parsedValue.lastRemoteBackupUrl
+                : null,
             lastSyncedAt: typeof parsedValue.lastSyncedAt === "string"
                 ? parsedValue.lastSyncedAt
                 : null,
@@ -89,6 +104,9 @@ export function markGitHubSyncDirty() {
 export function markGitHubSyncClean(params: {
     lastRemoteBackupAt?: string;
     lastRemoteBackupSha?: string;
+    lastRemoteBackupOwner?: string;
+    lastRemoteBackupRepo?: string;
+    lastRemoteBackupUrl?: string;
     lastSyncedAt: string;
     lastSyncedSha: string;
 }) {
@@ -98,6 +116,9 @@ export function markGitHubSyncClean(params: {
         dirty: false,
         lastRemoteBackupAt: params.lastRemoteBackupAt ?? currentState.lastRemoteBackupAt,
         lastRemoteBackupSha: params.lastRemoteBackupSha ?? currentState.lastRemoteBackupSha,
+        lastRemoteBackupOwner: params.lastRemoteBackupOwner ?? currentState.lastRemoteBackupOwner,
+        lastRemoteBackupRepo: params.lastRemoteBackupRepo ?? currentState.lastRemoteBackupRepo,
+        lastRemoteBackupUrl: params.lastRemoteBackupUrl ?? currentState.lastRemoteBackupUrl,
         lastSyncedAt: params.lastSyncedAt,
         lastSyncedSha: params.lastSyncedSha,
     });
@@ -106,6 +127,9 @@ export function markGitHubSyncClean(params: {
 export function updateGitHubRemoteBackupMetadata(params: {
     lastRemoteBackupAt: string | null;
     lastRemoteBackupSha: string | null;
+    lastRemoteBackupOwner?: string | null;
+    lastRemoteBackupRepo?: string | null;
+    lastRemoteBackupUrl?: string | null;
 }) {
     const currentState = readGitHubSyncState();
 
@@ -113,6 +137,15 @@ export function updateGitHubRemoteBackupMetadata(params: {
         ...currentState,
         lastRemoteBackupAt: params.lastRemoteBackupAt,
         lastRemoteBackupSha: params.lastRemoteBackupSha,
+        lastRemoteBackupOwner: params.lastRemoteBackupOwner === undefined
+            ? currentState.lastRemoteBackupOwner
+            : params.lastRemoteBackupOwner,
+        lastRemoteBackupRepo: params.lastRemoteBackupRepo === undefined
+            ? currentState.lastRemoteBackupRepo
+            : params.lastRemoteBackupRepo,
+        lastRemoteBackupUrl: params.lastRemoteBackupUrl === undefined
+            ? currentState.lastRemoteBackupUrl
+            : params.lastRemoteBackupUrl,
     });
 }
 

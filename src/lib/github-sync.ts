@@ -33,6 +33,19 @@ interface GitHubCommitResponse {
     };
 }
 
+interface GitHubCommitSummary {
+    sha: string;
+    commit: {
+        message: string;
+        author?: {
+            date?: string | null;
+        } | null;
+        committer?: {
+            date?: string | null;
+        } | null;
+    };
+}
+
 export interface BackupRepoInfo {
     owner: string;
     repo: string;
@@ -43,6 +56,11 @@ export interface BackupRepoInfo {
 export interface RemoteBackupSnapshot {
     sha: string;
     payload: GitHubSyncPayload;
+}
+
+export interface RemoteBackupMetadata {
+    sha: string;
+    exportedAt: string;
 }
 
 export class GitHubSyncError extends Error {
@@ -149,6 +167,59 @@ async function getRepoFile(
         );
     } catch (error) {
         if (error instanceof GitHubSyncError && error.status === 404) {
+            return null;
+        }
+
+        throw error;
+    }
+}
+
+function getExportedAtFromCommitMessage(message: string): string | null {
+    const match = message.match(
+        /\b\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z\b/,
+    );
+
+    return match?.[0] ?? null;
+}
+
+export async function getLatestBackupMetadata(
+    accessToken: string,
+    owner: string,
+): Promise<RemoteBackupMetadata | null> {
+    const params = new URLSearchParams({
+        path: GITHUB_SYNC_LATEST_PATH,
+        per_page: "1",
+    });
+
+    try {
+        const commits = await githubRequest<GitHubCommitSummary[]>(
+            accessToken,
+            `/repos/${owner}/${GITHUB_SYNC_REPO_NAME}/commits?${params.toString()}`,
+        );
+        const latestCommit = commits[0];
+
+        if (!latestCommit) {
+            return null;
+        }
+
+        const exportedAt = getExportedAtFromCommitMessage(latestCommit.commit.message)
+            ?? latestCommit.commit.committer?.date
+            ?? latestCommit.commit.author?.date
+            ?? null;
+
+        if (!exportedAt) {
+            return null;
+        }
+
+        return {
+            sha: latestCommit.sha,
+            exportedAt,
+        };
+    } catch (error) {
+        if (
+            error instanceof GitHubSyncError &&
+            (error.status === 404 || error.status === 409)
+        ) {
             return null;
         }
 

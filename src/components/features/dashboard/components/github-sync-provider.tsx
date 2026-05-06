@@ -135,37 +135,68 @@ export function GitHubSyncProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const refreshRemoteMetadata = useCallback(async () => {
-    if (sessionStatus !== "authenticated") {
-      updateGitHubRemoteBackupMetadata({
-        lastRemoteBackupAt: null,
-        lastRemoteBackupSha: null,
-      });
-      setSyncState(readGitHubSyncState());
-      return;
-    }
+  const refreshRemoteMetadata = useCallback(
+    async (options?: { force?: boolean }) => {
+      if (sessionStatus !== "authenticated") {
+        setSyncState(readGitHubSyncState());
+        return;
+      }
 
-    try {
-      const response = await fetch("/api/github-sync/metadata", {
-        cache: "no-store",
-      });
-      const data = await parseResponse<GitHubSyncMetadataResponse>(response);
+      const cachedSyncState = readGitHubSyncState();
 
-      updateGitHubRemoteBackupMetadata({
-        lastRemoteBackupAt: data.remoteBackup?.exportedAt ?? null,
-        lastRemoteBackupSha: data.remoteBackup?.sha ?? null,
-      });
-      setSyncState(readGitHubSyncState());
-      setSyncStatus((currentStatus) => ({
-        ...currentStatus,
-        githubLogin: data.githubLogin ?? currentStatus.githubLogin,
-        repo: data.repo,
-        remoteBackup: data.remoteBackup,
-      }));
-    } catch (error) {
-      console.error("Failed to refresh GitHub remote metadata", error);
-    }
-  }, [sessionStatus]);
+      if (
+        !options?.force &&
+        cachedSyncState.lastRemoteBackupAt &&
+        cachedSyncState.lastRemoteBackupSha
+      ) {
+        setSyncState(cachedSyncState);
+        setSyncStatus((currentStatus) => ({
+          ...currentStatus,
+          githubLogin: session?.user?.githubLogin ?? currentStatus.githubLogin,
+          repo:
+            cachedSyncState.lastRemoteBackupOwner &&
+            cachedSyncState.lastRemoteBackupRepo &&
+            cachedSyncState.lastRemoteBackupUrl
+              ? {
+                  owner: cachedSyncState.lastRemoteBackupOwner,
+                  repo: cachedSyncState.lastRemoteBackupRepo,
+                  url: cachedSyncState.lastRemoteBackupUrl,
+                }
+              : currentStatus.repo,
+          remoteBackup: {
+            sha: cachedSyncState.lastRemoteBackupSha,
+            exportedAt: cachedSyncState.lastRemoteBackupAt,
+          },
+        }));
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/github-sync/metadata", {
+          cache: "no-store",
+        });
+        const data = await parseResponse<GitHubSyncMetadataResponse>(response);
+
+        updateGitHubRemoteBackupMetadata({
+          lastRemoteBackupAt: data.remoteBackup?.exportedAt ?? null,
+          lastRemoteBackupSha: data.remoteBackup?.sha ?? null,
+          lastRemoteBackupOwner: data.repo?.owner ?? null,
+          lastRemoteBackupRepo: data.repo?.repo ?? null,
+          lastRemoteBackupUrl: data.repo?.url ?? null,
+        });
+        setSyncState(readGitHubSyncState());
+        setSyncStatus((currentStatus) => ({
+          ...currentStatus,
+          githubLogin: data.githubLogin ?? currentStatus.githubLogin,
+          repo: data.repo,
+          remoteBackup: data.remoteBackup,
+        }));
+      } catch (error) {
+        console.error("Failed to refresh GitHub remote metadata", error);
+      }
+    },
+    [session?.user?.githubLogin, sessionStatus],
+  );
 
   useEffect(() => {
     const unsubscribe = subscribeToGitHubSyncState((nextState) => {
@@ -223,7 +254,7 @@ export function GitHubSyncProvider({ children }: { children: ReactNode }) {
 
       await parseResponse(response);
       await refreshStatus();
-      void refreshRemoteMetadata();
+      void refreshRemoteMetadata({ force: true });
       toast.success("GitHub sync is connected.");
     } catch (error) {
       const message =
@@ -276,12 +307,20 @@ export function GitHubSyncProvider({ children }: { children: ReactNode }) {
 
         const data = await parseResponse<{
           sha: string;
+          repo?: {
+            owner: string;
+            repo: string;
+            url: string;
+          };
           exportedAt: string;
         }>(response);
 
         markGitHubSyncClean({
           lastRemoteBackupAt: data.exportedAt,
           lastRemoteBackupSha: data.sha,
+          lastRemoteBackupOwner: data.repo?.owner,
+          lastRemoteBackupRepo: data.repo?.repo,
+          lastRemoteBackupUrl: data.repo?.url,
           lastSyncedAt: data.exportedAt,
           lastSyncedSha: data.sha,
         });
@@ -292,8 +331,14 @@ export function GitHubSyncProvider({ children }: { children: ReactNode }) {
             sha: data.sha,
             exportedAt: data.exportedAt,
           },
+          repo: data.repo
+            ? {
+                owner: data.repo.owner,
+                repo: data.repo.repo,
+                url: data.repo.url,
+              }
+            : currentStatus.repo,
         }));
-        void refreshRemoteMetadata();
 
         if (!options?.silent) {
           toast.success("GitHub backup updated.");
@@ -311,7 +356,7 @@ export function GitHubSyncProvider({ children }: { children: ReactNode }) {
         setIsSyncing(false);
       }
     },
-    [refreshRemoteMetadata, sessionStatus, syncStatus.isConfigured],
+    [sessionStatus, syncStatus.isConfigured],
   );
 
   const restoreFromGitHub = useCallback(
@@ -357,7 +402,6 @@ export function GitHubSyncProvider({ children }: { children: ReactNode }) {
             exportedAt: data.payload.exportedAt,
           },
         }));
-        void refreshRemoteMetadata();
 
         if (!options?.silent) {
           toast.success("GitHub backup restored to this device.");
@@ -374,7 +418,7 @@ export function GitHubSyncProvider({ children }: { children: ReactNode }) {
         setIsSyncing(false);
       }
     },
-    [refreshRemoteMetadata, sessionStatus, syncStatus.isConfigured],
+    [sessionStatus, syncStatus.isConfigured],
   );
 
   const syncNow = useCallback(async () => {
