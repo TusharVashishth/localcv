@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { AuthSessionProvider } from "@/components/shared/auth-session-provider";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import { Toaster } from "sonner";
 import { buildRootMetadata } from "@/lib/seo";
@@ -30,10 +31,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>
-          {children}
-          <Toaster richColors position="top-right" />
-        </ThemeProvider>
+        <AuthSessionProvider>
+          <ThemeProvider>
+            {children}
+            <Toaster richColors position="top-right" />
+          </ThemeProvider>
+        </AuthSessionProvider>
         <MicrosoftClarity />
       </body>
     </html>
