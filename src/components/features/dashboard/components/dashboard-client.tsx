@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { ApiKeyDialog } from "./api-key-dialog";
 import { GitHubSyncCard } from "./github-sync-card";
+import { GitHubSyncProvider } from "./github-sync-provider";
 import { ImportDataDialog } from "./import-data-dialog";
 import { useAIConfig } from "../hooks/use-ai-config";
 import { useProfile } from "@/components/features/profile/hooks/use-profile";
@@ -201,7 +202,9 @@ export function DashboardClient() {
                         AI Ready
                       </p>
                       <p className="text-[11px] text-muted-foreground">
-                        {config?.provider ?? "Configured"}
+                        {config?.provider
+                          ? `${config.provider}/${config.modelName}`
+                          : "Configured"}
                       </p>
                     </div>
                     <Button
@@ -484,7 +487,9 @@ export function DashboardClient() {
         </BlurFade>
 
         <BlurFade delay={0.35} direction="up">
-          <GitHubSyncCard />
+          <GitHubSyncProvider>
+            <GitHubSyncCard />
+          </GitHubSyncProvider>
         </BlurFade>
       </main>
     </div>

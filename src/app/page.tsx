@@ -5,6 +5,7 @@ import { OrbitingCirclesSection } from "@/components/features/landing/orbiting-c
 import { TemplatesSection } from "@/components/features/landing/templates-section";
 import { TestimonialsSection } from "@/components/features/landing/testimonials-section";
 import { TopFeaturesSection } from "@/components/features/landing/top-features-section";
+import BrandLogo from "@/components/shared/brand-logo";
 import { ModeToggle } from "@/components/shared/mode-toggle";
 import { buildPageMetadata } from "@/lib/seo";
 import { FileText } from "lucide-react";
@@ -58,9 +59,7 @@ export default function Page() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <div className="flex justify-between items-center px-4 py-1">
-        <div className="bg-primary rounded-md p-1.5 ">
-          <FileText className="size-4 text-primary-foreground" />
-        </div>
+        <BrandLogo />
         <ModeToggle />
       </div>
       <HeroSection />
