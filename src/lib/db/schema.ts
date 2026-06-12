@@ -40,6 +40,7 @@ export interface ResumeProfile {
 }
 
 export interface WorkExperience {
+    id?: number;
     company: string;
     role: string;
     location?: string;
