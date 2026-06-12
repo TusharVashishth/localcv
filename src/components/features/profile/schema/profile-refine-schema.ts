@@ -17,6 +17,7 @@ const listFieldSchema = z
 
 
 export const experienceItemSchema = z.object({
+    id: z.number().optional(),
     company: z.string().trim().min(1),
     role: z.string().trim().min(1),
     location: z.string().optional().or(z.literal("")),
@@ -68,6 +69,7 @@ export const refineProfileSectionSchema = z.discriminatedUnion("section", [
 export const experienceOutputSchema = z.object({
     experience: z.array(
         z.object({
+            id: z.number().optional(),
             company: z.string().trim().min(1),
             role: z.string().trim().min(1),
             location: z.string().optional().or(z.literal("")),

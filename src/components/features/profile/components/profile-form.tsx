@@ -96,7 +96,8 @@ export function ProfileForm() {
         github: profile.profile.github ?? "",
       },
       summary: profile.summary,
-      experience: profile.experience.map((item) => ({
+      experience: profile.experience.map((item, idx) => ({
+        id: item.id || Date.now() + idx,
         ...item,
         location: item.location ?? "",
         description: item.description ?? "",
@@ -165,10 +166,13 @@ export function ProfileForm() {
         },
         summary: extracted.summary || prev.summary,
         skills: extracted.skills.length > 0 ? extracted.skills : prev.skills,
-        experience:
-          extracted.experience.length > 0
-            ? extracted.experience
-            : prev.experience,
+        experience: (extracted.experience.length > 0
+          ? extracted.experience
+          : prev.experience
+        ).map((exp: any, idx: number) => ({
+          ...exp,
+          id: exp.id || Date.now() + idx,
+        })),
         education:
           extracted.education.length > 0 ? extracted.education : prev.education,
         projects:
@@ -268,9 +272,16 @@ export function ProfileForm() {
         return;
       }
 
+      const refinedExperiences = (data.refined.experience ?? []).map(
+        (exp: any, index: number) => ({
+          ...exp,
+          id: formValues.experience[index]?.id || Date.now() + index,
+        })
+      );
+
       form.setValue(
         "experience",
-        data.refined.experience ?? formValues.experience,
+        refinedExperiences,
         {
           shouldDirty: true,
           shouldTouch: true,
@@ -354,8 +365,8 @@ export function ProfileForm() {
     form.setValue(
       "experience",
       [
-        ...current,
         {
+          id: Date.now() + Math.random(),
           company: "",
           role: "",
           location: "",
@@ -364,9 +375,18 @@ export function ProfileForm() {
           description: "",
           achievements: [],
         },
+        ...current,
       ],
       { shouldDirty: true, shouldTouch: true, shouldValidate: true },
     );
+  }
+
+  function reorderExperiences(next: ProfileFormValues["experience"]) {
+    form.setValue("experience", next, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
   }
 
   function removeExperience(index: number) {
@@ -551,6 +571,7 @@ export function ProfileForm() {
         addExperience={addExperience}
         removeExperience={removeExperience}
         updateExperience={updateExperience}
+        reorderExperiences={reorderExperiences}
         errors={errors}
         onRefineExperience={handleRefineExperienceSection}
         isRefiningExperience={isExperienceGenerating}

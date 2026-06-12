@@ -34,6 +34,7 @@ const resumeProfileSchema = z
 /** Single work-experience entry. */
 const workExperienceSchema = z
     .object({
+        id: z.number().optional(),
         company: z.string(),
         role: z.string(),
         location: optionalStringSchema,

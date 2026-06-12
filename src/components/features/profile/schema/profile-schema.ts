@@ -22,6 +22,7 @@ const resumeProfileSchema = z.object({
 });
 
 const workExperienceSchema = z.object({
+    id: z.number().optional(),
     company: z.string().trim().min(1, "Company is required"),
     role: z.string().trim().min(1, "Role is required"),
     location: z
@@ -101,6 +102,7 @@ export const defaultProfileFormValues: ProfileFormValues = {
     summary: "",
     experience: [
         {
+            id: 1,
             company: "",
             role: "",
             location: "",
