@@ -142,3 +142,33 @@ export interface CompanyResume {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export type JobApplicationStatus =
+    | "saved"
+    | "applied"
+    | "screening"
+    | "interview"
+    | "offer"
+    | "rejected"
+    | "withdrawn";
+
+export interface JobApplication {
+    id?: number;
+    companyName: string;
+    role: string;
+    jobUrl?: string;
+    jobDescription?: string;
+    status: JobApplicationStatus;
+    applicationDate: string; // ISO date string (YYYY-MM-DD)
+    followUpDate?: string;   // ISO date string (YYYY-MM-DD)
+    notes?: string;
+    salaryMin?: number;
+    salaryMax?: number;
+    currency?: string;
+    companyResumeId?: number; // FK -> CompanyResume.id (nullable)
+    recruiterName?: string;
+    recruiterEmail?: string;
+    source?: string;          // "LinkedIn" | "Company Site" | "Referral" | etc.
+    createdAt: Date;
+    updatedAt: Date;
+}
