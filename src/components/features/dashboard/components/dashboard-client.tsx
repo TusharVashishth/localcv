@@ -27,10 +27,16 @@ import {
 import { ApiKeyDialog } from "./api-key-dialog";
 import { GitHubSyncCard } from "./github-sync-card";
 import { GitHubSyncProvider } from "./github-sync-provider";
-import { ImportDataDialog } from "./import-data-dialog";
+// import { ImportDataDialog } from "./import-data-dialog";
 import { useAIConfig } from "../hooks/use-ai-config";
 import { useProfile } from "@/components/features/profile/hooks/use-profile";
 import { AI_FEATURES, STEPS } from "@/lib/dashboard-data";
+import dynamic from "next/dynamic";
+
+const ImportDataDialog = dynamic(() => import("./import-data-dialog").then((mod) => mod.ImportDataDialog), {
+  ssr: false
+});
+
 
 export function DashboardClient() {
   const router = useRouter();
@@ -279,11 +285,10 @@ export function DashboardClient() {
                         ? { y: -3, transition: { duration: 0.18 } }
                         : undefined
                     }
-                    className={`group relative overflow-hidden rounded-xl border bg-gradient-to-br ${s.gradient} ${s.border} p-5 flex flex-col gap-4 transition-all duration-200 ${
-                      !disabled
+                    className={`group relative overflow-hidden rounded-xl border bg-gradient-to-br ${s.gradient} ${s.border} p-5 flex flex-col gap-4 transition-all duration-200 ${!disabled
                         ? "cursor-pointer hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20"
                         : "opacity-60"
-                    }`}
+                      }`}
                     onClick={
                       !disabled ? () => handleStepClick(index) : undefined
                     }
@@ -331,13 +336,12 @@ export function DashboardClient() {
                     </div>
 
                     <div
-                      className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${
-                        done
+                      className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${done
                           ? s.textAccent
                           : disabled
                             ? "text-muted-foreground"
                             : s.textAccent
-                      }`}
+                        }`}
                     >
                       {stepButtonLabel(index)}
                       {!disabled && (
@@ -369,10 +373,10 @@ export function DashboardClient() {
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {AI_FEATURES.map((f, index) => {
                 const Icon = f.icon;
-                const locked = !isProfileCompleted || !hasApiKey;
+                const locked = f.key === "tracker" ? false : (!isProfileCompleted || !hasApiKey);
 
                 return (
                   <motion.div
@@ -389,11 +393,10 @@ export function DashboardClient() {
                         ? { y: -3, transition: { duration: 0.18 } }
                         : undefined
                     }
-                    className={`group relative overflow-hidden rounded-xl border bg-gradient-to-br ${f.gradient} ${f.border} p-5 flex flex-col gap-3.5 transition-all duration-200 ${
-                      !locked
+                    className={`group relative overflow-hidden rounded-xl border bg-gradient-to-br ${f.gradient} ${f.border} p-5 flex flex-col gap-3.5 transition-all duration-200 ${!locked
                         ? "cursor-pointer hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20"
                         : "opacity-55"
-                    }`}
+                      }`}
                     onClick={!locked ? () => router.push(f.route) : undefined}
                   >
                     {/* Ambient glow */}
@@ -416,8 +419,17 @@ export function DashboardClient() {
                         <Badge
                           className={`${f.badge} text-[10px] gap-1 h-5 shrink-0`}
                         >
-                          <Zap className="size-2.5" />
-                          AI
+                          {f.key === "tracker" ? (
+                            <>
+                              <HardDrive className="size-2.5" />
+                              Local
+                            </>
+                          ) : (
+                            <>
+                              <Zap className="size-2.5" />
+                              AI
+                            </>
+                          )}
                         </Badge>
                       )}
                     </div>
@@ -431,11 +443,13 @@ export function DashboardClient() {
 
                     <div className="flex items-center justify-between relative">
                       <span className="text-xs font-medium text-muted-foreground">
-                        {!isProfileCompleted
-                          ? "Complete profile first"
-                          : !hasApiKey
-                            ? "Add AI key first"
-                            : f.label}
+                        {f.key === "tracker"
+                          ? f.label
+                          : !isProfileCompleted
+                            ? "Complete profile first"
+                            : !hasApiKey
+                              ? "Add AI key first"
+                              : f.label}
                       </span>
                       {!locked && (
                         <ChevronRight className="size-3.5 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5" />

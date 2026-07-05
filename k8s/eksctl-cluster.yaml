@@ -1,0 +1,64 @@
+# apiVersion defines the schema version of the eksctl configuration structure.
+# eksctl uses this to parse the configuration properties correctly.
+apiVersion: eksctl.io/v1alpha5
+
+# kind specifies that this file is a ClusterConfig resource used to configure an EKS cluster.
+kind: ClusterConfig
+
+# metadata contains the primary identifying information for the EKS cluster.
+metadata:
+  # name specifies the unique name of your EKS cluster in your AWS account.
+  # AWS resources created for this cluster (like VPCs, security groups, subnets) will be tagged with this name.
+  name: local-cv-cluster
+  
+  # region specifies the AWS geographic region where the cluster resources will be provisioned.
+  # Choosing a region close to your target audience reduces latency. E.g. ap-south-1 (Mumbai), us-east-1 (N. Virginia).
+  region: ap-south-1 
+  
+  # version specifies the Kubernetes control plane version.
+  # EKS supports versions up to 1.30+. Using 1.30 ensures modern API features and security patches.
+  version: "1.30"
+
+# iam defines identity and access management settings for the cluster.
+iam:
+  # withOIDC: true automatically creates an IAM OpenID Connect (OIDC) provider for the cluster.
+  # This is required for IAM Roles for Service Accounts (IRSA) so pods and addons (like vpc-cni) can assume IAM roles.
+  withOIDC: true
+
+# managedNodeGroups defines the groups of EC2 instances that will run your Docker containers (worker nodes).
+# "Managed" means AWS will automatically handle updates, scaling, and draining of these instances.
+managedNodeGroups:
+  # You can define multiple node groups; here we define a single default group for standard application workloads.
+  - name: standard-workers
+  
+    # instanceType determines the hardware specifications of each worker node (vCPU, RAM, network bandwidth).
+    # t3.small gives 2 vCPUs and 2 GiB RAM. It's balanced and cost-effective for microservices and mid-tier Next.js apps.
+    instanceType: t3.small
+    
+    # desiredCapacity is the number of worker node instances eksctl should spin up initially.
+    desiredCapacity: 1
+    
+    # minSize is the minimum count the node group can scale down to during low-traffic periods.
+    minSize: 1
+    
+    # maxSize is the maximum count the node group can scale up to (using Cluster Autoscaler) during high traffic.
+    maxSize: 4
+    
+    # volumeSize defines the disk size in GiB (EBS GP3 volume) attached to each worker node to store Docker images and temp files.
+    volumeSize: 20
+    
+    # privateNetworking controls whether worker nodes have public IP addresses.
+    # When false, nodes are assigned public IPs (easier setup). 
+    # When true, nodes are placed in private subnets and access the internet via NAT Gateways (more secure, standard for enterprise).
+    privateNetworking: false 
+    
+    # labels are key-value pairs attached to Kubernetes node resources.
+    # Useful for scheduling specific Pods onto specific nodes using nodeSelector.
+    labels: { role: workers }
+    
+    # tags are key-value metadata pairs applied directly to the AWS EC2 instances.
+    # Essential for AWS resource cost-tracking, organization, and automation scripts.
+    tags:
+      nodegroup-role: worker
+      Project: localCV
+      Environment: prod

@@ -1,0 +1,143 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: local-cv
+  labels:
+    app.kubernetes.io/name: local-cv
+    app.kubernetes.io/part-of: local-cv
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: local-cv
+  namespace: local-cv
+  labels:
+    app.kubernetes.io/name: local-cv
+    app.kubernetes.io/part-of: local-cv
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: local-cv
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: local-cv
+        app.kubernetes.io/part-of: local-cv
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: local-cv
+          image: 361593878272.dkr.ecr.ap-south-1.amazonaws.com/localcv:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: PORT
+              value: "3000"
+            - name: HOSTNAME
+              value: 0.0.0.0
+          envFrom:
+            - secretRef:
+                name: local-cv-env
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: local-cv
+  namespace: local-cv
+  labels:
+    app.kubernetes.io/name: local-cv
+    app.kubernetes.io/part-of: local-cv
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: HTTP
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: /api/health
+    service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: Project=localCV,Environment=prod,ManagedBy=codex
+spec:
+  type: LoadBalancer
+  # loadBalancerClass: eks.amazonaws.com/nlb
+  selector:
+    app.kubernetes.io/name: local-cv
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: local-cv
+  namespace: local-cv
+  labels:
+    app.kubernetes.io/name: local-cv
+    app.kubernetes.io/part-of: local-cv
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: local-cv
+  minReplicas: 1
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: local-cv
+  namespace: local-cv
+  labels:
+    app.kubernetes.io/name: local-cv
+    app.kubernetes.io/part-of: local-cv
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: local-cv

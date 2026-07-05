@@ -92,4 +92,20 @@ export const AI_FEATURES = [
         route: "/dashboard/company-resumes",
         label: "Generate Cover Letter",
     },
+    {
+        key: "tracker",
+        title: "Applications Tracker",
+        description:
+            "Track jobs in a Kanban pipeline, link tailored resumes/covers, and review conversion metrics.",
+        icon: BriefcaseBusiness,
+        iconBg: "from-blue-500 to-indigo-500",
+        iconShadow: "shadow-blue-500/30",
+        gradient: "from-blue-500/8 via-indigo-500/5 to-transparent",
+        border: "border-blue-200/60 dark:border-blue-800/30",
+        badge:
+            "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+        glow: "bg-indigo-500/8 dark:bg-indigo-500/5",
+        route: "/dashboard/tracker",
+        label: "Open Tracker",
+    },
 ] as const;

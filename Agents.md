@@ -2,10 +2,6 @@
 
 - localCV: a local-first, privacy-focused AI Resume Maker built using Next.js.Here user can build resume , change resume based on ATS with AI.
 
-### NPM installation
-
-- Before any npm command use `nvm use 24.11.1` to ensure you are using the correct Node version.
-
 ## Tech Stack
 
 - Next.js
