@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useJobApplication } from "../hooks/use-job-applications";
 import dynamic from "next/dynamic";
+import { MarkdownRenderer } from "./markdown-renderer";
 
 const ResumePickerDialog = dynamic(
   () => import("./resume-picker-dialog").then((mod) => mod.ResumePickerDialog),
@@ -27,7 +28,6 @@ import {
   DollarSign,
   User,
   Mail,
-  Share2,
   Trash2,
   Edit2,
   FileText,
@@ -83,17 +83,17 @@ export function JobDetailPanel({
 
   const followUpFormatted = jobApplication.followUpDate
     ? new Intl.DateTimeFormat("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      }).format(new Date(jobApplication.followUpDate))
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(new Date(jobApplication.followUpDate))
     : null;
 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-2xl">
-          <DialogHeader className="space-y-4">
+        <DialogContent className="max-w-3xl sm:max-w-3xl flex flex-col max-h-[90vh] md:max-h-[85vh] p-6 overflow-hidden gap-4">
+          <DialogHeader className="space-y-4 pr-10">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div className="flex items-start gap-3.5">
                 <div className="flex items-center justify-center size-11 rounded-xl bg-gradient-to-br from-primary to-emerald-500 text-white shrink-0 shadow-md shadow-primary/20">
@@ -145,7 +145,7 @@ export function JobDetailPanel({
             </div>
           </DialogHeader>
 
-          <ScrollArea className="max-h-[60vh] pr-1">
+          <ScrollArea className="flex-1 min-h-0 pr-1">
             <div className="space-y-6 py-2">
               {/* Linked Resume & Cover Letter Section */}
               <div className="rounded-xl border bg-muted/20 dark:bg-muted/10 p-4">
@@ -185,7 +185,7 @@ export function JobDetailPanel({
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/dashboard/company-resumes/${jobApplication.companyResumeId}`}
-                        className="flex-1"
+                        className="flex-1 flex"
                       >
                         <Button variant="outline" size="sm" className="w-full gap-1.5 h-8 text-xs">
                           <FileTextIcon className="size-3.5" />
@@ -195,7 +195,7 @@ export function JobDetailPanel({
 
                       <Link
                         href={`/dashboard/company-resumes/${jobApplication.companyResumeId}/cover-letter`}
-                        className="flex-1"
+                        className="flex-1 flex"
                       >
                         <Button variant="outline" size="sm" className="w-full gap-1.5 h-8 text-xs">
                           <Mail className="size-3.5" />
@@ -219,8 +219,8 @@ export function JobDetailPanel({
                       </Button>
 
                       <Link
-                        href={`/dashboard/company-resumes?prefill=${encodeURIComponent(jobApplication.companyName)}&role=${encodeURIComponent(jobApplication.role)}`}
-                        className="flex-1"
+                        href={`/dashboard/company-resumes?prefill=${encodeURIComponent(jobApplication.companyName)}&role=${encodeURIComponent(jobApplication.role)}&jd=${encodeURIComponent(jobApplication.jobDescription || "")}`}
+                        className="flex-1 flex"
                       >
                         <Button variant="outline" size="sm" className="w-full h-8 text-xs gap-1.5">
                           <Sparkles className="size-3.5 text-violet-500" />
@@ -335,8 +335,8 @@ export function JobDetailPanel({
                   Personal Notes
                 </h4>
                 {jobApplication.notes ? (
-                  <div className="p-3 rounded-lg border bg-amber-500/5 border-amber-500/10 text-xs text-foreground/90 whitespace-pre-wrap leading-relaxed">
-                    {jobApplication.notes}
+                  <div className="p-3 rounded-lg border bg-amber-500/5 border-amber-500/10 text-xs text-foreground/90 leading-relaxed">
+                    <MarkdownRenderer value={jobApplication.notes} />
                   </div>
                 ) : (
                   <p className="text-xs text-muted-foreground italic">No notes added. Click edit to add notes.</p>

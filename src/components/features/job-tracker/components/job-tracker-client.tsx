@@ -231,25 +231,29 @@ export function JobTrackerClient() {
               </div>
 
               {/* View Toggle */}
-              <div className="flex items-center gap-1 rounded-lg border bg-muted/40 p-0.5 self-end sm:self-auto">
-                <Button
-                  variant={viewMode === "kanban" ? "secondary" : "ghost"}
-                  size="xs"
-                  className={`h-7 px-2.5 text-[11px] gap-1 ${viewMode === "kanban" ? "shadow-xs" : ""}`}
+              <div className="flex items-center gap-0.5 rounded-xl border border-border/60 bg-muted/30 p-1 self-end sm:self-auto shadow-sm">
+                <button
                   onClick={() => setViewMode("kanban")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-150 ${
+                    viewMode === "kanban"
+                      ? "bg-background text-foreground shadow-sm border border-border/50"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <KanbanIcon className="size-3" />
                   Kanban
-                </Button>
-                <Button
-                  variant={viewMode === "list" ? "secondary" : "ghost"}
-                  size="xs"
-                  className={`h-7 px-2.5 text-[11px] gap-1 ${viewMode === "list" ? "shadow-xs" : ""}`}
+                </button>
+                <button
                   onClick={() => setViewMode("list")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-150 ${
+                    viewMode === "list"
+                      ? "bg-background text-foreground shadow-sm border border-border/50"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <ListIcon className="size-3" />
                   List
-                </Button>
+                </button>
               </div>
             </div>
           </>

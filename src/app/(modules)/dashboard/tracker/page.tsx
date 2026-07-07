@@ -1,5 +1,6 @@
 import { JobTrackerClient } from "@/components/features/job-tracker/components/job-tracker-client";
 import { buildPageMetadata } from "@/lib/seo";
+import { Suspense } from "react";
 
 export const metadata = buildPageMetadata({
   title: "Job Applications Tracker",
@@ -15,5 +16,9 @@ export const metadata = buildPageMetadata({
 });
 
 export default function JobTrackerPage() {
-  return <JobTrackerClient />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background py-8 text-center text-xs text-muted-foreground animate-pulse">Loading...</div>}>
+      <JobTrackerClient />
+    </Suspense>
+  );
 }
