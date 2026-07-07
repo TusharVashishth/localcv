@@ -79,8 +79,11 @@ export function CreateCompanyResumeDialog({
     if (open) {
       const companyPrefill = searchParams.get("prefill") || "";
       const rolePrefill = searchParams.get("role") || "";
+      const jdQueryPrefill = searchParams.get("jd") || "";
       let jdPrefill = "";
-      if (rolePrefill) {
+      if (jdQueryPrefill) {
+        jdPrefill = jdQueryPrefill;
+      } else if (rolePrefill) {
         jdPrefill = `Role: ${rolePrefill}\n`;
       }
       reset({

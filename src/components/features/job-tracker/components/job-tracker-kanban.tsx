@@ -4,7 +4,6 @@ import { useState } from "react";
 import { JobCard } from "./job-card";
 import { STATUS_LABELS } from "../types/job-tracker-types";
 import type { JobApplicationStatus, JobApplicationWithResume } from "../types/job-tracker-types";
-import { Badge } from "@/components/ui/badge";
 
 interface JobTrackerKanbanProps {
   jobs: JobApplicationWithResume[];
@@ -12,15 +11,90 @@ interface JobTrackerKanbanProps {
   onUpdateStatus: (id: number, status: JobApplicationStatus) => Promise<void>;
 }
 
-// Columns config with specific styling tokens for top-bar accents
-const COLUMN_ACCENTS: Record<JobApplicationStatus, string> = {
-  saved: "bg-muted-foreground/35",
-  applied: "bg-blue-500",
-  screening: "bg-amber-500",
-  interview: "bg-violet-500",
-  offer: "bg-emerald-500",
-  rejected: "bg-destructive/60",
-  withdrawn: "bg-muted-foreground/35",
+/** ****** Rich column config with gradients and colors ****** */
+const COLUMN_CONFIG: Record<
+  JobApplicationStatus,
+  {
+    accent: string;
+    headerGradient: string;
+    headerBorder: string;
+    countBg: string;
+    countText: string;
+    dropHighlight: string;
+    icon: string;
+    emoji: string;
+  }
+> = {
+  saved: {
+    accent: "bg-slate-400",
+    headerGradient: "from-slate-500/10 to-transparent",
+    headerBorder: "border-slate-400/30",
+    countBg: "bg-slate-400/15 border-slate-400/25",
+    countText: "text-slate-500 dark:text-slate-400",
+    dropHighlight: "border-slate-400/60 bg-slate-400/5",
+    icon: "🔖",
+    emoji: "📌",
+  },
+  applied: {
+    accent: "bg-blue-500",
+    headerGradient: "from-blue-500/12 to-transparent",
+    headerBorder: "border-blue-500/30",
+    countBg: "bg-blue-500/15 border-blue-500/25",
+    countText: "text-blue-600 dark:text-blue-400",
+    dropHighlight: "border-blue-500/60 bg-blue-500/5",
+    icon: "📤",
+    emoji: "✈️",
+  },
+  screening: {
+    accent: "bg-amber-500",
+    headerGradient: "from-amber-500/12 to-transparent",
+    headerBorder: "border-amber-500/30",
+    countBg: "bg-amber-500/15 border-amber-500/25",
+    countText: "text-amber-600 dark:text-amber-400",
+    dropHighlight: "border-amber-500/60 bg-amber-500/5",
+    icon: "🔍",
+    emoji: "📞",
+  },
+  interview: {
+    accent: "bg-violet-500",
+    headerGradient: "from-violet-500/12 to-transparent",
+    headerBorder: "border-violet-500/30",
+    countBg: "bg-violet-500/15 border-violet-500/25",
+    countText: "text-violet-600 dark:text-violet-400",
+    dropHighlight: "border-violet-500/60 bg-violet-500/5",
+    icon: "🎤",
+    emoji: "💬",
+  },
+  offer: {
+    accent: "bg-emerald-500",
+    headerGradient: "from-emerald-500/14 to-transparent",
+    headerBorder: "border-emerald-500/30",
+    countBg: "bg-emerald-500/15 border-emerald-500/25",
+    countText: "text-emerald-600 dark:text-emerald-400",
+    dropHighlight: "border-emerald-500/60 bg-emerald-500/5",
+    icon: "🏆",
+    emoji: "🎉",
+  },
+  rejected: {
+    accent: "bg-rose-500",
+    headerGradient: "from-rose-500/10 to-transparent",
+    headerBorder: "border-rose-500/30",
+    countBg: "bg-rose-500/15 border-rose-500/25",
+    countText: "text-rose-600 dark:text-rose-400",
+    dropHighlight: "border-rose-500/60 bg-rose-500/5",
+    icon: "❌",
+    emoji: "📭",
+  },
+  withdrawn: {
+    accent: "bg-zinc-400",
+    headerGradient: "from-zinc-400/10 to-transparent",
+    headerBorder: "border-zinc-400/30",
+    countBg: "bg-zinc-400/15 border-zinc-400/25",
+    countText: "text-zinc-500 dark:text-zinc-400",
+    dropHighlight: "border-zinc-400/60 bg-zinc-400/5",
+    icon: "↩️",
+    emoji: "🚪",
+  },
 };
 
 export function JobTrackerKanban({ jobs, onCardClick, onUpdateStatus }: JobTrackerKanbanProps) {
@@ -58,7 +132,7 @@ export function JobTrackerKanban({ jobs, onCardClick, onUpdateStatus }: JobTrack
     setDragOverColumn(null);
   };
 
-  // Group jobs by status
+  /** ****** Group jobs by status ****** */
   const jobsByStatus = (Object.keys(STATUS_LABELS) as JobApplicationStatus[]).reduce(
     (acc, status) => {
       acc[status] = jobs.filter((j) => j.status === status);
@@ -68,10 +142,12 @@ export function JobTrackerKanban({ jobs, onCardClick, onUpdateStatus }: JobTrack
   );
 
   return (
-    <div className="flex gap-4 items-start overflow-x-auto pb-5 pt-1 w-full select-none snap-x">
+    <div className="flex gap-3.5 items-start overflow-x-auto pb-6 pt-1 w-full select-none snap-x scrollbar-thin">
       {(Object.entries(STATUS_LABELS) as [JobApplicationStatus, string][]).map(([status, label]) => {
+        const cfg = COLUMN_CONFIG[status];
         const columnJobs = jobsByStatus[status] || [];
         const isDraggedOver = dragOverColumn === status;
+        const isEmpty = columnJobs.length === 0;
 
         return (
           <div
@@ -80,28 +156,39 @@ export function JobTrackerKanban({ jobs, onCardClick, onUpdateStatus }: JobTrack
             onDragLeave={handleDragLeave}
             onDrop={(e) => handleDrop(e, status)}
             onDragEnd={handleDragEnd}
-            className={`flex flex-col rounded-xl border bg-muted/20 dark:bg-muted/10 p-3 w-[290px] shrink-0 min-h-[450px] transition-all duration-200 snap-start ${
+            className={`flex flex-col rounded-2xl border transition-all duration-200 snap-start w-[280px] shrink-0 min-h-[460px] overflow-hidden ${
               isDraggedOver
-                ? "border-primary bg-primary/5 dark:bg-primary/5 shadow-inner scale-[1.01]"
-                : "border-border"
+                ? `${cfg.dropHighlight} shadow-lg scale-[1.015]`
+                : "border-border/60 bg-muted/10 dark:bg-muted/5"
             }`}
           >
-            {/* Column Header */}
-            <div className="flex items-center justify-between mb-3 px-1">
-              <div className="flex items-center gap-2">
-                {/* Visual Accent Bar */}
-                <div className={`w-1.5 h-3.5 rounded-full ${COLUMN_ACCENTS[status]}`} />
-                <span className="font-semibold text-xs text-foreground tracking-tight">
-                  {label}
-                </span>
+            {/* ****** Column Header with gradient ****** */}
+            <div className={`relative bg-gradient-to-b ${cfg.headerGradient} p-3.5 pb-3 border-b ${cfg.headerBorder}`}>
+              {/* Top accent line */}
+              <div className={`absolute top-0 left-0 right-0 h-0.5 ${cfg.accent} rounded-t-2xl`} />
+
+              <div className="flex items-center justify-between mt-1">
+                <div className="flex items-center gap-2">
+                  {/* ****** Column emoji icon ****** */}
+                  <span className="text-sm leading-none select-none" role="img" aria-hidden>
+                    {cfg.icon}
+                  </span>
+                  <span className="font-semibold text-xs text-foreground tracking-tight">
+                    {label}
+                  </span>
+                </div>
+
+                {/* ****** Count badge ****** */}
+                <div
+                  className={`flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full border text-[10px] font-bold ${cfg.countBg} ${cfg.countText}`}
+                >
+                  {columnJobs.length}
+                </div>
               </div>
-              <Badge variant="secondary" className="h-4.5 text-[9px] px-1.5 font-medium bg-muted/65">
-                {columnJobs.length}
-              </Badge>
             </div>
 
-            {/* Column Cards Container */}
-            <div className="flex-1 space-y-2.5 overflow-y-auto max-h-[500px] pr-0.5">
+            {/* ****** Column Cards Container ****** */}
+            <div className="flex-1 space-y-2.5 overflow-y-auto p-3 max-h-[520px] scrollbar-thin">
               {columnJobs.length > 0 ? (
                 columnJobs.map((job) => (
                   <JobCard
@@ -112,8 +199,26 @@ export function JobTrackerKanban({ jobs, onCardClick, onUpdateStatus }: JobTrack
                   />
                 ))
               ) : (
-                <div className="h-20 flex items-center justify-center border border-dashed rounded-lg text-[10px] text-muted-foreground italic px-2 text-center select-none">
-                  Drag here
+                <div
+                  className={`h-28 flex flex-col items-center justify-center border border-dashed rounded-xl text-center px-3 gap-1.5 transition-colors ${
+                    isDraggedOver
+                      ? `${cfg.headerBorder} bg-transparent`
+                      : "border-border/40"
+                  }`}
+                >
+                  <span className="text-xl select-none" role="img" aria-hidden>
+                    {cfg.emoji}
+                  </span>
+                  <p className="text-[10px] text-muted-foreground/60 italic leading-snug">
+                    Drag a card here
+                  </p>
+                </div>
+              )}
+
+              {/* ****** Drop indicator at bottom when dragging ****** */}
+              {isDraggedOver && !isEmpty && (
+                <div className={`h-12 flex items-center justify-center border-2 border-dashed rounded-xl ${cfg.headerBorder} text-[10px] ${cfg.countText} font-medium`}>
+                  Drop here
                 </div>
               )}
             </div>
