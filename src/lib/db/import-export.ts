@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { db } from "./index";
-import type { AIConfig, ATSResult, CompanyResume, Profile } from "./schema";
+import type { AIConfig, ATSResult, CompanyResume, Profile, JobApplication } from "./schema";
 import type { CoverLetterContent, CoverLetterStyleConfig } from "./schema";
 
 // ─── Primitive helpers ────────────────────────────────────────────────────────
@@ -195,13 +195,45 @@ const atsResultSchema = z
     })
     .strict();
 
+const jobApplicationStatusSchema = z.enum([
+    "saved",
+    "applied",
+    "screening",
+    "interview",
+    "offer",
+    "rejected",
+    "withdrawn",
+]);
+
+const jobApplicationSchema = z
+    .object({
+        companyName: z.string().trim().min(1),
+        role: z.string().trim().min(1),
+        jobUrl: optionalStringSchema,
+        jobDescription: optionalStringSchema,
+        status: jobApplicationStatusSchema,
+        applicationDate: z.string(),
+        followUpDate: optionalStringSchema,
+        notes: optionalStringSchema,
+        salaryMin: z.number().optional(),
+        salaryMax: z.number().optional(),
+        currency: optionalStringSchema,
+        companyResumeId: z.number().optional(),
+        recruiterName: optionalStringSchema,
+        recruiterEmail: optionalStringSchema,
+        source: optionalStringSchema,
+        createdAt: dateSchema,
+        updatedAt: dateSchema,
+    })
+    .strict();
+
 // ─── Root payload schema ──────────────────────────────────────────────────────
 
 /** Versioned envelope that wraps all exported local data. */
 const localDataPayloadSchema = z
     .object({
-        /** Schema version: 1 = initial, 2 = +companyResumes, 3 = +atsResults, 4 = +coverLetter on companyResumes. */
-        version: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
+        /** Schema version: 1 = initial, 2 = +companyResumes, 3 = +atsResults, 4 = +coverLetter on companyResumes, 5 = +jobApplications. */
+        version: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]),
         exportedAt: z.iso.datetime(),
         aiConfigs: z.array(aiConfigSchema),
         profiles: z.array(profileSchema),
@@ -209,6 +241,8 @@ const localDataPayloadSchema = z
         companyResumes: z.array(companyResumeSchema).optional().default([]),
         /** Added in v3 — optional so v1/v2 exports remain valid. */
         atsResults: z.array(atsResultSchema).optional().default([]),
+        /** Added in v5 — optional so v1-v4 exports remain valid. */
+        jobApplications: z.array(jobApplicationSchema).optional().default([]),
     })
     .strict();
 
@@ -221,6 +255,7 @@ const githubSyncPayloadSchema = z
         profiles: z.array(profileSchema),
         companyResumes: z.array(companyResumeSchema).default([]),
         atsResults: z.array(atsResultSchema).default([]),
+        jobApplications: z.array(jobApplicationSchema).default([]),
     })
     .strict();
 
@@ -230,29 +265,32 @@ export type GitHubSyncPayload = z.infer<typeof githubSyncPayloadSchema>;
 
 /** Reads all tables and serialises them into a portable export payload. */
 export async function createLocalDataExport(): Promise<LocalDataPayload> {
-    const [aiConfigs, profiles, companyResumes, atsResults] = await Promise.all([
+    const [aiConfigs, profiles, companyResumes, atsResults, jobApplications] = await Promise.all([
         db.aiConfigs.toArray(),
         db.profiles.toArray(),
         db.companyResumes.toArray(),
         db.atsResults.toArray(),
+        db.jobApplications.toArray(),
     ]);
 
     return {
-        version: 4,
+        version: 5,
         exportedAt: new Date().toISOString(),
         aiConfigs: aiConfigs.map((item) => normalizeAiConfig(item)),
         profiles: profiles.map((item) => normalizeProfile(item)),
         companyResumes: companyResumes.map((item) => normalizeCompanyResume(item)),
         atsResults: atsResults.map((item) => normalizeAtsResult(item)),
+        jobApplications: jobApplications.map((item) => normalizeJobApplication(item)),
     };
 }
 
 /** Reads syncable resume data and serialises it for GitHub backup without AI secrets. */
 export async function createGitHubSyncExport(): Promise<GitHubSyncPayload> {
-    const [profiles, companyResumes, atsResults] = await Promise.all([
+    const [profiles, companyResumes, atsResults, jobApplications] = await Promise.all([
         db.profiles.toArray(),
         db.companyResumes.toArray(),
         db.atsResults.toArray(),
+        db.jobApplications.toArray(),
     ]);
 
     return {
@@ -261,6 +299,7 @@ export async function createGitHubSyncExport(): Promise<GitHubSyncPayload> {
         profiles: profiles.map((item) => normalizeProfile(item)),
         companyResumes: companyResumes.map((item) => normalizeCompanyResume(item)),
         atsResults: atsResults.map((item) => normalizeAtsResult(item)),
+        jobApplications: jobApplications.map((item) => normalizeJobApplication(item)),
     };
 }
 
@@ -278,11 +317,12 @@ export function parseGitHubSyncImport(raw: unknown): GitHubSyncPayload {
 export async function importLocalData(raw: unknown): Promise<void> {
     const parsed = parseLocalDataImport(raw);
 
-    await db.transaction("rw", db.aiConfigs, db.profiles, db.companyResumes, db.atsResults, async () => {
+    await db.transaction("rw", [db.aiConfigs, db.profiles, db.companyResumes, db.atsResults, db.jobApplications], async () => {
         await db.aiConfigs.clear();
         await db.profiles.clear();
         await db.companyResumes.clear();
         await db.atsResults.clear();
+        await db.jobApplications.clear();
 
         if (parsed.aiConfigs.length > 0) {
             await db.aiConfigs.bulkAdd(parsed.aiConfigs.map((item) => normalizeAiConfig(item)));
@@ -303,6 +343,12 @@ export async function importLocalData(raw: unknown): Promise<void> {
                 parsed.atsResults.map((item) => normalizeAtsResult(item)),
             );
         }
+
+        if (parsed.jobApplications && parsed.jobApplications.length > 0) {
+            await db.jobApplications.bulkAdd(
+                parsed.jobApplications.map((item) => normalizeJobApplication(item)),
+            );
+        }
     });
 }
 
@@ -310,10 +356,11 @@ export async function importLocalData(raw: unknown): Promise<void> {
 export async function importGitHubSyncData(raw: unknown): Promise<void> {
     const parsed = parseGitHubSyncImport(raw);
 
-    await db.transaction("rw", db.profiles, db.companyResumes, db.atsResults, async () => {
+    await db.transaction("rw", [db.profiles, db.companyResumes, db.atsResults, db.jobApplications], async () => {
         await db.profiles.clear();
         await db.companyResumes.clear();
         await db.atsResults.clear();
+        await db.jobApplications.clear();
 
         if (parsed.profiles.length > 0) {
             await db.profiles.bulkAdd(parsed.profiles.map((item) => normalizeProfile(item)));
@@ -328,6 +375,12 @@ export async function importGitHubSyncData(raw: unknown): Promise<void> {
         if (parsed.atsResults.length > 0) {
             await db.atsResults.bulkAdd(
                 parsed.atsResults.map((item) => normalizeAtsResult(item)),
+            );
+        }
+
+        if (parsed.jobApplications.length > 0) {
+            await db.jobApplications.bulkAdd(
+                parsed.jobApplications.map((item) => normalizeJobApplication(item)),
             );
         }
     });
@@ -509,4 +562,27 @@ function normalizeOptionalString(value: string | undefined): string | undefined 
     if (!value) return undefined;
     const trimmed = value.trim();
     return trimmed.length > 0 ? trimmed : undefined;
+}
+
+/** Trims strings and re-hydrates dates for a job application record. */
+function normalizeJobApplication(input: Omit<JobApplication, "id">): Omit<JobApplication, "id"> {
+    return {
+        companyName: input.companyName.trim(),
+        role: input.role.trim(),
+        jobUrl: normalizeOptionalString(input.jobUrl),
+        jobDescription: normalizeOptionalString(input.jobDescription),
+        status: input.status,
+        applicationDate: input.applicationDate.trim(),
+        followUpDate: normalizeOptionalString(input.followUpDate),
+        notes: normalizeOptionalString(input.notes),
+        salaryMin: input.salaryMin,
+        salaryMax: input.salaryMax,
+        currency: normalizeOptionalString(input.currency),
+        companyResumeId: input.companyResumeId,
+        recruiterName: normalizeOptionalString(input.recruiterName),
+        recruiterEmail: normalizeOptionalString(input.recruiterEmail),
+        source: normalizeOptionalString(input.source),
+        createdAt: new Date(input.createdAt),
+        updatedAt: new Date(input.updatedAt),
+    };
 }

@@ -27,6 +27,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import type { CompanyResume } from "@/lib/db/schema";
+import { useLiveQuery } from "dexie-react-hooks";
+import { db } from "@/lib/db";
 
 interface CompanyResumeCardProps {
   resume: CompanyResume;
@@ -35,6 +37,12 @@ interface CompanyResumeCardProps {
 
 export function CompanyResumeCard({ resume, onDelete }: CompanyResumeCardProps) {
   const router = useRouter();
+
+  const trackedJob = useLiveQuery(
+    () => db.jobApplications.where("companyResumeId").equals(resume.id || 0).first(),
+    [resume.id]
+  );
+  const isTracked = !!trackedJob;
 
   const jdPreview =
     resume.jobDescription.length > 100
@@ -122,40 +130,63 @@ export function CompanyResumeCard({ resume, onDelete }: CompanyResumeCardProps) 
           </Button>
         </div>
 
-        <AlertDialog>
-          <AlertDialogTrigger
-            render={
-              <Button
-                size="sm"
-                variant="ghost"
-                className="w-full gap-1.5 h-7 text-[11px] text-muted-foreground hover:text-destructive hover:bg-destructive/8"
-              />
-            }
+        {isTracked ? (
+          <Button
+            size="sm"
+            variant="secondary"
+            className="w-full gap-1.5 h-8 text-xs bg-emerald-500/10 hover:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+            onClick={() => router.push(`/dashboard/tracker`)}
           >
-            <Trash2 className="size-3" />
-            Delete
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Company Resume?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will permanently delete the tailored resume for{" "}
-                <span className="font-semibold">{resume.companyName}</span>.
-                This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                onClick={() => resume.id && onDelete(resume.id)}
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+            <CheckCircle2 className="size-3.5" />
+            Tracked Application
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            className="w-full gap-1.5 h-8 text-xs border-dashed border-primary/40 hover:border-primary text-primary hover:bg-primary/5"
+            onClick={() => router.push(`/dashboard/tracker?prefillResumeId=${resume.id}`)}
+          >
+            <Sparkles className="size-3.5 text-violet-500" />
+            Track Application
+          </Button>
+        )}
       </div>
+
+      <AlertDialog>
+        <AlertDialogTrigger
+          render={
+            <Button
+              size="sm"
+              variant="ghost"
+              className="w-full gap-1.5 h-7 text-[11px] text-muted-foreground hover:text-destructive hover:bg-destructive/8"
+            />
+          }
+        >
+          <Trash2 className="size-3" />
+          Delete
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Company Resume?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the tailored resume for{" "}
+              <span className="font-semibold">{resume.companyName}</span>.
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => resume.id && onDelete(resume.id)}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
     </motion.div>
   );
 }

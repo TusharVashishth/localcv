@@ -1,7 +1,7 @@
 import { ModeToggle } from "@/components/shared/mode-toggle";
 import { ProfileCompletionBanner } from "@/components/features/profile/components/profile-completion-banner";
 import { Button } from "@/components/ui/button";
-import { FileText, UserRound } from "lucide-react";
+import { FileText, UserRound, BriefcaseBusiness } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import type { Metadata } from "next";
@@ -47,6 +47,15 @@ export default function modulesLayout({
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm">
               <Link href="/dashboard">Dashboard</Link>
+            </Button>
+            <Button variant="ghost" size="sm">
+              <Link
+                href="/dashboard/tracker"
+                className="flex items-center justify-center space-x-1.5"
+              >
+                <BriefcaseBusiness className="size-4" />
+                <span>Tracker</span>
+              </Link>
             </Button>
             <Button variant="ghost" size="sm">
               <Link

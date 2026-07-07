@@ -2,7 +2,7 @@
 
 /* ****** Grid list of company resume cards ****** */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, BriefcaseBusiness, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,11 +11,19 @@ import { toast } from "sonner";
 import { CompanyResumeCard } from "./company-resume-card";
 import { CreateCompanyResumeDialog } from "./create-company-resume-dialog";
 import { useCompanyResumes } from "../hooks/use-company-resumes";
+import { useSearchParams } from "next/navigation";
 
 export function CompanyResumeList() {
+  const searchParams = useSearchParams();
   const [companyNameSearch, setCompanyNameSearch] = useState("");
   const { companyResumes, isLoading, deleteCompanyResume } = useCompanyResumes(companyNameSearch);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("prefill")) {
+      setIsCreateOpen(true);
+    }
+  }, [searchParams]);
   const hasSearch = companyNameSearch.trim().length > 0;
   const count = companyResumes?.length ?? 0;
 

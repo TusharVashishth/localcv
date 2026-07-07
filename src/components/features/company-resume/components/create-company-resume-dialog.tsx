@@ -2,7 +2,7 @@
 
 /* ****** Dialog to create a new company-specific resume via AI ****** */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -37,6 +37,7 @@ import {
 import { useCompanyResumes } from "../hooks/use-company-resumes";
 import { useProfile } from "@/components/features/profile/hooks/use-profile";
 import { useAIConfig } from "@/components/features/dashboard/hooks/use-ai-config";
+import { useSearchParams } from "next/navigation";
 
 /* ****** Generation step definitions ****** */
 const GENERATION_STEPS = [
@@ -71,6 +72,26 @@ export function CreateCompanyResumeDialog({
     resolver: zodResolver(createCompanyResumeSchema),
     defaultValues: { companyName: "", jobDescription: "" },
   });
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (open) {
+      const companyPrefill = searchParams.get("prefill") || "";
+      const rolePrefill = searchParams.get("role") || "";
+      const jdQueryPrefill = searchParams.get("jd") || "";
+      let jdPrefill = "";
+      if (jdQueryPrefill) {
+        jdPrefill = jdQueryPrefill;
+      } else if (rolePrefill) {
+        jdPrefill = `Role: ${rolePrefill}\n`;
+      }
+      reset({
+        companyName: companyPrefill,
+        jobDescription: jdPrefill,
+      });
+    }
+  }, [open, searchParams, reset]);
 
   const canGenerate = isProfileCompleted && hasApiKey;
 
