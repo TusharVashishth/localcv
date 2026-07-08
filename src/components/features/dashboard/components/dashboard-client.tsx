@@ -22,11 +22,11 @@ import {
   ShieldCheck,
   HardDrive,
   ChevronRight,
-  Cloud,
 } from "lucide-react";
 import { ApiKeyDialog } from "./api-key-dialog";
 import { GitHubSyncCard } from "./github-sync-card";
 import { GitHubSyncProvider } from "./github-sync-provider";
+import { GoogleDriveSyncCard } from "./google-drive-sync-card";
 // import { ImportDataDialog } from "./import-data-dialog";
 import { useAIConfig } from "../hooks/use-ai-config";
 import { useProfile } from "@/components/features/profile/hooks/use-profile";
@@ -39,7 +39,6 @@ const ImportDataDialog = dynamic(
     ssr: false,
   },
 );
-import { GoogleDriveSyncButton } from "./google-drive-sync-button";
 
 export function DashboardClient() {
   const router = useRouter();
@@ -472,6 +471,16 @@ export function DashboardClient() {
         </BlurFade>
 
         {/* ****** Backup section ****** */}
+
+        <BlurFade delay={0.32} direction="up">
+          <GoogleDriveSyncCard />
+        </BlurFade>
+
+        <BlurFade delay={0.35} direction="up">
+          <GitHubSyncProvider>
+            <GitHubSyncCard />
+          </GitHubSyncProvider>
+        </BlurFade>
         <BlurFade delay={0.3} direction="up">
           <section className="rounded-xl border bg-muted/30 dark:bg-muted/15 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 transition-shadow hover:shadow-sm">
             <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -507,12 +516,6 @@ export function DashboardClient() {
               </Button>
             </div>
           </section>
-        </BlurFade>
-
-        <BlurFade delay={0.35} direction="up">
-          <GitHubSyncProvider>
-            <GitHubSyncCard />
-          </GitHubSyncProvider>
         </BlurFade>
       </main>
     </div>

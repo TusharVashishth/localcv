@@ -4,10 +4,19 @@ import { toast } from "sonner";
 import { createLocalDataExport, importLocalData } from "@/lib/db/import-export";
 
 const FILE_NAME = "localcv_backup.json";
+const LAST_PUSH_KEY = "localcv_gdrive_last_push";
+const LAST_PULL_KEY = "localcv_gdrive_last_pull";
 
 export function useGoogleDriveSync() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [lastPushedAt, setLastPushedAt] = useState<string | null>(null);
+  const [lastPulledAt, setLastPulledAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLastPushedAt(localStorage.getItem(LAST_PUSH_KEY));
+    setLastPulledAt(localStorage.getItem(LAST_PULL_KEY));
+  }, []);
 
   const fetchNewToken = useCallback(async () => {
     try {
@@ -126,6 +135,10 @@ export function useGoogleDriveSync() {
         throw new Error("Failed to upload to Drive");
       }
 
+      const pushedAt = new Date().toISOString();
+      localStorage.setItem(LAST_PUSH_KEY, pushedAt);
+      setLastPushedAt(pushedAt);
+
       toast.success("Successfully backed up to Google Drive.");
     } catch (err) {
       console.error(err);
@@ -163,6 +176,11 @@ export function useGoogleDriveSync() {
 
       const data = await response.json();
       await importLocalData(data);
+
+      const pulledAt = new Date().toISOString();
+      localStorage.setItem(LAST_PULL_KEY, pulledAt);
+      setLastPulledAt(pulledAt);
+
       toast.success("Successfully restored from Google Drive.");
     } catch (err) {
       console.error(err);
@@ -178,5 +196,7 @@ export function useGoogleDriveSync() {
     pullFromDrive,
     isSyncing,
     isAuthenticated: !!accessToken,
+    lastPushedAt,
+    lastPulledAt,
   };
 }
