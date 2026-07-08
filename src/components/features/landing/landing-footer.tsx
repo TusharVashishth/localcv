@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export function LandingFooter() {
   return (
     <footer className="relative h-100 overflow-hidden border-t border-border/70 bg-linear-to from-zinc-100 via-zinc-200 to-zinc-300 dark:from-zinc-900 dark:via-zinc-950 dark:to-black flex flex-col items-center justify-center">
@@ -14,19 +16,21 @@ export function LandingFooter() {
             Tushar Vashishth
           </a>
         </p>
-        {/* <div className="flex gap-4 text-sm text-zinc-600 dark:text-zinc-400">
-          <a href="#" className="hover:text-primary transition-colors">
+        <div className="flex items-center gap-4 text-sm text-zinc-600 dark:text-zinc-400">
+          <Link
+            href="/privacy-policy"
+            className="hover:text-primary transition-colors"
+          >
             Privacy Policy
-          </a>
+          </Link>
           <span>&bull;</span>
-          <a href="#" className="hover:text-primary transition-colors">
+          <Link
+            href="/terms-of-service"
+            className="hover:text-primary transition-colors"
+          >
             Terms of Service
-          </a>
-          <span>&bull;</span>
-          <a href="#" className="hover:text-primary transition-colors">
-            Contact
-          </a>
-        </div> */}
+          </Link>
+        </div>
         <p className="text-xs uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mt-2">
           &copy; {new Date().getFullYear()} localCV. All rights reserved.
         </p>
