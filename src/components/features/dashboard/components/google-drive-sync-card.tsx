@@ -106,7 +106,7 @@ export function GoogleDriveSyncCard() {
               {isAuthenticated ? (
                 <Button
                   size="sm"
-                  variant="ghost"
+                  variant="destructive"
                   className="h-6 gap-1 px-2 text-[0.72rem] text-muted-foreground hover:text-foreground"
                   onClick={() => handleLogin()}
                   disabled={isSyncing}
@@ -157,8 +157,8 @@ export function GoogleDriveSyncCard() {
                         Restore Google Drive Backup?
                       </AlertDialogTitle>
                       <AlertDialogDescription>
-                        This will replace the current local resume data on
-                        this device with the latest Google Drive backup.
+                        This will replace the current local resume data on this
+                        device with the latest Google Drive backup.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
