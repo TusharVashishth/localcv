@@ -1,32 +1,11 @@
 import { ModeToggle } from "@/components/shared/mode-toggle";
 import { ProfileCompletionBanner } from "@/components/features/profile/components/profile-completion-banner";
 import { Button } from "@/components/ui/button";
-<<<<<<< HEAD
 import { UserRound, BriefcaseBusiness } from "lucide-react";
-=======
-import { FileText, UserRound, BriefcaseBusiness } from "lucide-react";
->>>>>>> origin/main
 import Link from "next/link";
 import React from "react";
 import type { Metadata } from "next";
 import BrandLogo from "@/components/shared/brand-logo";
-<<<<<<< HEAD
-=======
-
-export const metadata: Metadata = {
-  robots: {
-    index: false,
-    follow: false,
-    googleBot: {
-      index: false,
-      follow: false,
-      "max-image-preview": "none",
-      "max-video-preview": -1,
-      "max-snippet": -1,
-    },
-  },
-};
->>>>>>> origin/main
 
 export const metadata: Metadata = {
   robots: {

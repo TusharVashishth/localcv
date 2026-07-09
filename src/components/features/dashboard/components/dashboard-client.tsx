@@ -26,29 +26,19 @@ import {
 import { ApiKeyDialog } from "./api-key-dialog";
 import { GitHubSyncCard } from "./github-sync-card";
 import { GitHubSyncProvider } from "./github-sync-provider";
-<<<<<<< HEAD
 import { GoogleDriveSyncCard } from "./google-drive-sync-card";
-=======
->>>>>>> origin/main
 // import { ImportDataDialog } from "./import-data-dialog";
 import { useAIConfig } from "../hooks/use-ai-config";
 import { useProfile } from "@/components/features/profile/hooks/use-profile";
 import { AI_FEATURES, STEPS } from "@/lib/dashboard-data";
 import dynamic from "next/dynamic";
 
-<<<<<<< HEAD
 const ImportDataDialog = dynamic(
   () => import("./import-data-dialog").then((mod) => mod.ImportDataDialog),
   {
     ssr: false,
   },
 );
-=======
-const ImportDataDialog = dynamic(() => import("./import-data-dialog").then((mod) => mod.ImportDataDialog), {
-  ssr: false
-});
-
->>>>>>> origin/main
 
 export function DashboardClient() {
   const router = useRouter();
@@ -297,10 +287,11 @@ export function DashboardClient() {
                         ? { y: -3, transition: { duration: 0.18 } }
                         : undefined
                     }
-                    className={`group relative overflow-hidden rounded-xl border bg-gradient-to-br ${s.gradient} ${s.border} p-5 flex flex-col gap-4 transition-all duration-200 ${!disabled
+                    className={`group relative overflow-hidden rounded-xl border bg-gradient-to-br ${s.gradient} ${s.border} p-5 flex flex-col gap-4 transition-all duration-200 ${
+                      !disabled
                         ? "cursor-pointer hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20"
                         : "opacity-60"
-                      }`}
+                    }`}
                     onClick={
                       !disabled ? () => handleStepClick(index) : undefined
                     }
@@ -348,12 +339,13 @@ export function DashboardClient() {
                     </div>
 
                     <div
-                      className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${done
+                      className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${
+                        done
                           ? s.textAccent
                           : disabled
                             ? "text-muted-foreground"
                             : s.textAccent
-                        }`}
+                      }`}
                     >
                       {stepButtonLabel(index)}
                       {!disabled && (
@@ -388,14 +380,10 @@ export function DashboardClient() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {AI_FEATURES.map((f, index) => {
                 const Icon = f.icon;
-<<<<<<< HEAD
                 const locked =
                   f.key === "tracker"
                     ? false
                     : !isProfileCompleted || !hasApiKey;
-=======
-                const locked = f.key === "tracker" ? false : (!isProfileCompleted || !hasApiKey);
->>>>>>> origin/main
 
                 return (
                   <motion.div
@@ -412,10 +400,11 @@ export function DashboardClient() {
                         ? { y: -3, transition: { duration: 0.18 } }
                         : undefined
                     }
-                    className={`group relative overflow-hidden rounded-xl border bg-gradient-to-br ${f.gradient} ${f.border} p-5 flex flex-col gap-3.5 transition-all duration-200 ${!locked
+                    className={`group relative overflow-hidden rounded-xl border bg-gradient-to-br ${f.gradient} ${f.border} p-5 flex flex-col gap-3.5 transition-all duration-200 ${
+                      !locked
                         ? "cursor-pointer hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20"
                         : "opacity-55"
-                      }`}
+                    }`}
                     onClick={!locked ? () => router.push(f.route) : undefined}
                   >
                     {/* Ambient glow */}

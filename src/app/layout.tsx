@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
-<<<<<<< HEAD
 import { GoogleAnalytics } from "@next/third-parties/google";
-=======
->>>>>>> origin/main
 import { AuthSessionProvider } from "@/components/shared/auth-session-provider";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import { Toaster } from "sonner";
