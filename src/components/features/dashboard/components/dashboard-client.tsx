@@ -26,16 +26,29 @@ import {
 import { ApiKeyDialog } from "./api-key-dialog";
 import { GitHubSyncCard } from "./github-sync-card";
 import { GitHubSyncProvider } from "./github-sync-provider";
+<<<<<<< HEAD
+import { GoogleDriveSyncCard } from "./google-drive-sync-card";
+=======
+>>>>>>> origin/main
 // import { ImportDataDialog } from "./import-data-dialog";
 import { useAIConfig } from "../hooks/use-ai-config";
 import { useProfile } from "@/components/features/profile/hooks/use-profile";
 import { AI_FEATURES, STEPS } from "@/lib/dashboard-data";
 import dynamic from "next/dynamic";
 
+<<<<<<< HEAD
+const ImportDataDialog = dynamic(
+  () => import("./import-data-dialog").then((mod) => mod.ImportDataDialog),
+  {
+    ssr: false,
+  },
+);
+=======
 const ImportDataDialog = dynamic(() => import("./import-data-dialog").then((mod) => mod.ImportDataDialog), {
   ssr: false
 });
 
+>>>>>>> origin/main
 
 export function DashboardClient() {
   const router = useRouter();
@@ -375,7 +388,14 @@ export function DashboardClient() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {AI_FEATURES.map((f, index) => {
                 const Icon = f.icon;
+<<<<<<< HEAD
+                const locked =
+                  f.key === "tracker"
+                    ? false
+                    : !isProfileCompleted || !hasApiKey;
+=======
                 const locked = f.key === "tracker" ? false : (!isProfileCompleted || !hasApiKey);
+>>>>>>> origin/main
 
                 return (
                   <motion.div
@@ -462,6 +482,16 @@ export function DashboardClient() {
         </BlurFade>
 
         {/* ****** Backup section ****** */}
+
+        <BlurFade delay={0.32} direction="up">
+          <GoogleDriveSyncCard />
+        </BlurFade>
+
+        <BlurFade delay={0.35} direction="up">
+          <GitHubSyncProvider>
+            <GitHubSyncCard />
+          </GitHubSyncProvider>
+        </BlurFade>
         <BlurFade delay={0.3} direction="up">
           <section className="rounded-xl border bg-muted/30 dark:bg-muted/15 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 transition-shadow hover:shadow-sm">
             <div className="flex items-center gap-3 flex-1 min-w-0">
