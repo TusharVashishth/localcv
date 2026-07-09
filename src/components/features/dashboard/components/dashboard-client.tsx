@@ -517,12 +517,6 @@ export function DashboardClient() {
             </div>
           </section>
         </BlurFade>
-
-        <BlurFade delay={0.35} direction="up">
-          <GitHubSyncProvider>
-            <GitHubSyncCard />
-          </GitHubSyncProvider>
-        </BlurFade>
       </main>
     </div>
   );
