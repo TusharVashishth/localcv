@@ -5,7 +5,7 @@ export default function BrandLogo() {
   return (
     <div className="inline-flex items-center gap-0.5 whitespace-nowrap">
       <Image
-        src="/assets/logos/localcv-icon-v2.png"
+        src="/assets/logos/logo.png"
         alt="LocalCV icon"
         width={40}
         height={38}

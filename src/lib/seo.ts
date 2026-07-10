@@ -15,7 +15,7 @@ export const seoConfig = {
     siteUrl: "https://localcv.tusharvashishth.com",
     defaultTitle: "Free ATS-Optimized Resume Builder",
     defaultDescription:
-        "Build ATS-ready resumes with a local-first, privacy-focused resume builder. Create, refine, and export role-specific resumes in minutes.",
+        "Build ATS-ready resumes with a local-first, privacy-focused resume builder. Create, refine, and export role-specific resumes, track job applications on a job board, and back up to Google Drive in minutes.",
     defaultOgImage: "/og-image.png",
     defaultKeywords: [
         "resume builder",
@@ -24,6 +24,12 @@ export const seoConfig = {
         "privacy-focused",
         "AI resume maker",
         "free resume templates",
+        "job application tracker",
+        "job board",
+        "Google Drive resume backup",
+        "Github Backup",
+        "installable resume app",
+        "PWA resume builder",
         "localCV",
     ],
     creator: "Tushar Vashishth",
@@ -65,6 +71,9 @@ export function buildRootMetadata(): Metadata {
         category: "technology",
         alternates: {
             canonical: canonicalPath,
+            types: {
+                "text/plain": `${seoConfig.siteUrl}/llms.txt`,
+            },
         },
         robots: buildRobots(false),
         openGraph: {
@@ -89,8 +98,10 @@ export function buildRootMetadata(): Metadata {
             description: seoConfig.defaultDescription,
             images: [seoConfig.defaultOgImage],
         },
-        other: {
-            "theme-color": "#0f172a",
+        appleWebApp: {
+            capable: true,
+            statusBarStyle: "black-translucent",
+            title: seoConfig.siteName,
         },
     };
 }

@@ -212,3 +212,7 @@
   animation: none;
   mix-blend-mode: normal;
 }
+
+.pwa-safe-top {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
