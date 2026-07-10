@@ -30,7 +30,7 @@ export default function modulesLayout({
   return (
     <main className="min-h-screen bg-background text-foreground transition-colors">
       {/* ****** Navbar ****** */}
-      <header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-20">
+      <header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-20 pwa-safe-top">
         <div className="container mx-auto flex items-center justify-between px-6 py-3">
           {/* Brand */}
           <Link
