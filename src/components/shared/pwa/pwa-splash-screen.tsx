@@ -59,7 +59,7 @@ export default function PwaSplashScreen() {
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
             <Image
-              src="/assets/logos/localcv-icon-v2-raw.png"
+              src="/assets/logos/logo.png"
               alt="localCV"
               width={96}
               height={96}
