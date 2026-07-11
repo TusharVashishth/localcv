@@ -51,12 +51,21 @@ export const COVER_LETTER_TEXT_COLOR_PRESETS = [
 
 export const COVER_LETTER_ACCENT_COLOR_PRESETS = [
     { label: "Navy Blue", value: "#0f4c81" },
+    { label: "Midnight Blue", value: "#1e3a8a" },
     { label: "Royal Blue", value: "#2563eb" },
+    { label: "Steel Blue", value: "#4682b4" },
     { label: "Teal", value: "#0d9488" },
+    { label: "Forest Green", value: "#166534" },
     { label: "Emerald", value: "#059669" },
-    { label: "Purple", value: "#7c3aed" },
+    { label: "Burgundy", value: "#881337" },
+    { label: "Crimson", value: "#be123c" },
     { label: "Rose", value: "#e11d48" },
+    { label: "Amber", value: "#b45309" },
     { label: "Orange", value: "#ea580c" },
+    { label: "Plum", value: "#701a75" },
+    { label: "Purple", value: "#7c3aed" },
+    { label: "Slate", value: "#475569" },
+    { label: "Charcoal", value: "#1e293b" },
     { label: "Gray", value: "#374151" },
 ] as const;
 

@@ -10,13 +10,12 @@ import {
 } from "@/components/features/resume-templates";
 import { DEFAULT_STYLE_CONFIG } from "@/components/features/resume-templates/types";
 import { Marquee } from "@/components/ui/marquee";
+import { cn } from "@/lib/utils";
 
 function TemplatePage({
   template,
-  priority,
 }: {
   template: (typeof RESUME_TEMPLATES)[number];
-  priority: boolean;
 }) {
   const router = useRouter();
   const TemplateComponent = template.component;
@@ -32,26 +31,58 @@ function TemplatePage({
   const handleNavigate = () => router.push("/dashboard/builder");
 
   return (
-    <motion.div whileHover={{ y: -8 }} className="flex justify-center">
+    <motion.div
+      whileHover={{ y: -8, scale: 1.01 }}
+      whileTap={{ scale: 0.985 }}
+      className="flex justify-center"
+    >
       <article
         onClick={handleNavigate}
         onKeyDown={(e) => e.key === "Enter" && handleNavigate()}
         role="button"
         tabIndex={0}
-        className="group block shrink-0 cursor-pointer"
+        className={cn(
+          "group relative block shrink-0 cursor-pointer rounded-[2.25rem] text-left transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+          "p-6 pb-5 flex flex-col bg-slate-100/50 dark:bg-slate-900/40 border border-slate-200/50 dark:border-slate-800/50 shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-[0_8px_24px_rgba(0,0,0,0.04)]",
+          "w-84 sm:w-88"
+        )}
         aria-label={`Open ${template.name} template in builder`}
       >
-        <div className="relative w-84 overflow-hidden transition-transform duration-300 sm:w-88">
-          <div className="relative aspect-210/297 overflow-hidden border border-slate-200/90 bg-background dark:border-white/12">
+        {/* ****** Preview thumbnail — full A4 aspect ratio, complete resume visible ****** */}
+        <div
+          className="relative overflow-hidden rounded-[1.25rem] bg-white @container shadow-[0_12px_24px_-8px_rgba(0,0,0,0.08),0_4px_12px_-8px_rgba(0,0,0,0.04)] transition-all duration-300 w-full border border-slate-100 dark:border-slate-800/80"
+          style={{ aspectRatio: "794 / 1123", containerType: "inline-size" }}
+        >
+          {/* ****** Scaled A4 resume — origin top-left fills card column width dynamically ****** */}
+          <div className="pointer-events-none absolute inset-0" aria-hidden>
             <div
-              className="pointer-events-none absolute top-0 left-0 origin-top-left"
-              style={{ width: "840px", transform: "scale(0.405)" }}
+              className="absolute left-0 top-0 origin-top-left"
+              style={{
+                width: "794px",
+                height: "1123px",
+                transform: "scale(calc(100cqw / 794px))",
+              }}
             >
               <TemplateComponent
                 data={TEMPLATE_PREVIEW_DATA}
                 styleConfig={previewStyleConfig}
               />
             </div>
+          </div>
+        </div>
+
+        {/* ****** Card footer ****** */}
+        <div className="mt-5 flex items-center justify-between gap-3 px-1 w-full">
+          <div className="min-w-0">
+            <p className="text-[1.1rem] font-semibold leading-tight truncate text-slate-800 dark:text-slate-200 transition-colors group-hover:text-primary">
+              {template.name}
+            </p>
+          </div>
+          <div className="flex items-center gap-1.5 shrink-0 rounded-full border border-slate-200/60 dark:border-slate-800 bg-white dark:bg-slate-950 px-2.5 py-0.5 shadow-sm">
+            <span className="flex size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              ATS
+            </span>
           </div>
         </div>
       </article>
@@ -94,11 +125,10 @@ export function TemplatesSection() {
             repeat={3}
             className="[--duration:40s] [--gap:1.5rem] px-6 md:px-10"
           >
-            {RESUME_TEMPLATES.map((template, index) => (
+            {RESUME_TEMPLATES.map((template) => (
               <TemplatePage
                 key={template.id}
                 template={template}
-                priority={index < 2}
               />
             ))}
           </Marquee>

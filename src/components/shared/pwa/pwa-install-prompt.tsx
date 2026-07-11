@@ -19,17 +19,17 @@ export default function PwaInstallPrompt() {
       description: isIos
         ? 'Tap the Share icon, then "Add to Home Screen" for the full app experience.'
         : "Install the app for a faster, native-like experience.",
-      duration: 8000,
+      duration: 4000,
       richColors: true,
 
       action: isIos
         ? undefined
         : {
-            label: "Install",
-            onClick: () => {
-              void promptInstall();
-            },
+          label: "Install",
+          onClick: () => {
+            void promptInstall();
           },
+        },
     });
   }, [isStandalone, isIos, canPromptInstall, promptInstall]);
 

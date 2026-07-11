@@ -1,6 +1,6 @@
 "use client";
 
-/* ****** Resume Style Editor Toolbar ****** */
+/* ****** Resume Style Editor Toolbar — Vertical Sidebar Panel ****** */
 
 import {
   ACCENT_COLOR_PRESETS,
@@ -14,64 +14,144 @@ import { ALargeSmall, Baseline, Type } from "lucide-react";
 interface EditorToolbarProps {
   styleConfig: ResumeStyleConfig;
   onChange: (updated: Partial<ResumeStyleConfig>) => void;
+  /** When true renders in compact horizontal mode (for mobile top bar) */
+  compact?: boolean;
 }
 
-export function EditorToolbar({ styleConfig, onChange }: EditorToolbarProps) {
+export function EditorToolbar({ styleConfig, onChange, compact = false }: EditorToolbarProps) {
+  if (compact) {
+    /* ****** Horizontal scrolling compact strip for mobile ****** */
+    return (
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+        {/* Font Family */}
+        <div className="flex shrink-0 items-center gap-1.5">
+          <Type className="size-3.5 shrink-0 text-muted-foreground" />
+          <div className="flex gap-1">
+            {FONT_OPTIONS.map((opt) => (
+              <button
+                key={opt.value + opt.fontFamilyValue}
+                type="button"
+                onClick={() => onChange({ fontFamily: opt.value, fontFamilyValue: opt.fontFamilyValue })}
+                className={cn(
+                  "shrink-0 rounded-full border px-2.5 py-1 text-xs transition-colors whitespace-nowrap",
+                  styleConfig.fontFamilyValue === opt.fontFamilyValue
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border hover:bg-muted",
+                )}
+                style={{ fontFamily: opt.fontFamilyValue }}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="h-5 w-px bg-border/60 self-center shrink-0" />
+
+        {/* Font Size */}
+        <div className="flex shrink-0 items-center gap-1.5">
+          <ALargeSmall className="size-3.5 shrink-0 text-muted-foreground" />
+          <div className="flex gap-1">
+            {FONT_SIZE_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => onChange({ fontSize: opt.value })}
+                className={cn(
+                  "shrink-0 rounded-full border px-2.5 py-1 text-xs transition-colors",
+                  styleConfig.fontSize === opt.value
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border hover:bg-muted",
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="h-5 w-px bg-border/60 self-center shrink-0" />
+
+        {/* Colors */}
+        <div className="flex shrink-0 items-center gap-1.5">
+          <Baseline className="size-3.5 shrink-0 text-muted-foreground" />
+          <div className="flex gap-1.5 items-center">
+            {ACCENT_COLOR_PRESETS.map((preset) => (
+              <button
+                key={preset.value}
+                type="button"
+                title={preset.label}
+                onClick={() => onChange({ accentColor: preset.value })}
+                className={cn(
+                  "size-5 rounded-full border-2 transition-transform hover:scale-110",
+                  styleConfig.accentColor === preset.value
+                    ? "border-foreground scale-110 shadow-sm"
+                    : "border-transparent",
+                )}
+                style={{ backgroundColor: preset.value }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ****** Vertical stacked panel for sidebar ****** */
   return (
-    <div className="flex flex-wrap items-center gap-4 px-4 py-2.5 rounded-lg border bg-muted/30 text-sm">
-      {/* ****** Font Family ****** */}
-      <div className="flex items-center gap-2 min-w-0">
-        <Type className="size-3.5 text-muted-foreground shrink-0" />
-        <span className="text-xs text-muted-foreground whitespace-nowrap shrink-0">
-          Font
-        </span>
-        {/* ****** Horizontally scrollable font buttons ****** */}
-        <div className="flex gap-1 overflow-x-auto pb-0.5 max-w-65 lg:max-w-100 scrollbar-hide">
+    <div className="space-y-5">
+      {/* Font Family */}
+      <div>
+        <div className="mb-2.5 flex items-center gap-2">
+          <div className="flex size-6 items-center justify-center rounded-lg bg-primary/10">
+            <Type className="size-3 text-primary" />
+          </div>
+          <span className="text-xs font-semibold text-foreground">Font Family</span>
+        </div>
+        <div className="flex flex-col gap-1.5">
           {FONT_OPTIONS.map((opt) => (
             <button
               key={opt.value + opt.fontFamilyValue}
               type="button"
-              title={opt.label}
-              onClick={() =>
-                onChange({
-                  fontFamily: opt.value,
-                  fontFamilyValue: opt.fontFamilyValue,
-                })
-              }
+              onClick={() => onChange({ fontFamily: opt.value, fontFamilyValue: opt.fontFamilyValue })}
               className={cn(
-                "shrink-0 px-2 py-0.5 rounded text-xs border transition-colors",
+                "flex items-center justify-between rounded-xl border px-3 py-2 text-xs transition-all text-left",
                 styleConfig.fontFamilyValue === opt.fontFamilyValue
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border hover:bg-muted",
+                  ? "border-primary/60 bg-primary/8 text-primary font-semibold shadow-sm"
+                  : "border-border/60 bg-background/60 text-foreground hover:bg-muted/60 hover:border-border",
               )}
               style={{ fontFamily: opt.fontFamilyValue }}
             >
-              {opt.label}
+              <span>{opt.label}</span>
+              {styleConfig.fontFamilyValue === opt.fontFamilyValue && (
+                <span className="size-2 rounded-full bg-primary" />
+              )}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="h-4 w-px bg-border" />
+      <div className="h-px bg-border/40" />
 
-      {/* ****** Font Size ****** */}
-      <div className="flex items-center gap-2">
-        <ALargeSmall className="size-3.5 text-muted-foreground shrink-0" />
-        <span className="text-xs text-muted-foreground whitespace-nowrap">
-          Size
-        </span>
-        <div className="flex gap-1">
+      {/* Font Size */}
+      <div>
+        <div className="mb-2.5 flex items-center gap-2">
+          <div className="flex size-6 items-center justify-center rounded-lg bg-primary/10">
+            <ALargeSmall className="size-3 text-primary" />
+          </div>
+          <span className="text-xs font-semibold text-foreground">Font Size</span>
+        </div>
+        <div className="grid grid-cols-3 gap-1.5">
           {FONT_SIZE_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               type="button"
-              title={opt.label}
               onClick={() => onChange({ fontSize: opt.value })}
               className={cn(
-                "px-2 py-0.5 rounded text-xs border transition-colors",
+                "rounded-xl border py-2 text-xs font-medium transition-all",
                 styleConfig.fontSize === opt.value
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border hover:bg-muted",
+                  ? "border-primary/60 bg-primary/8 text-primary shadow-sm"
+                  : "border-border/60 bg-background/60 text-foreground hover:bg-muted/60",
               )}
             >
               {opt.label}
@@ -80,15 +160,17 @@ export function EditorToolbar({ styleConfig, onChange }: EditorToolbarProps) {
         </div>
       </div>
 
-      <div className="h-4 w-px bg-border" />
+      <div className="h-px bg-border/40" />
 
-      {/* ****** Accent Color ****** */}
-      <div className="flex items-center gap-2">
-        <Baseline className="size-3.5 text-muted-foreground shrink-0" />
-        <span className="text-xs text-muted-foreground whitespace-nowrap">
-          Color
-        </span>
-        <div className="flex gap-1.5">
+      {/* Accent Color */}
+      <div>
+        <div className="mb-2.5 flex items-center gap-2">
+          <div className="flex size-6 items-center justify-center rounded-lg bg-primary/10">
+            <Baseline className="size-3 text-primary" />
+          </div>
+          <span className="text-xs font-semibold text-foreground">Accent Color</span>
+        </div>
+        <div className="flex flex-wrap gap-2.5">
           {ACCENT_COLOR_PRESETS.map((preset) => (
             <button
               key={preset.value}
@@ -96,29 +178,36 @@ export function EditorToolbar({ styleConfig, onChange }: EditorToolbarProps) {
               title={preset.label}
               onClick={() => onChange({ accentColor: preset.value })}
               className={cn(
-                "w-5 h-5 rounded-full border-2 transition-transform hover:scale-110",
+                "size-7 rounded-full border-2 transition-all hover:scale-110 hover:shadow-md",
                 styleConfig.accentColor === preset.value
-                  ? "border-foreground scale-110 shadow-sm"
+                  ? "border-foreground scale-110 shadow-md"
                   : "border-transparent",
               )}
               style={{ backgroundColor: preset.value }}
             />
           ))}
-          {/* Custom hex input */}
+          {/* ****** Custom color picker ****** */}
           <label
-            className="w-5 h-5 rounded-full border-2 border-dashed border-muted-foreground/40 flex items-center justify-center cursor-pointer hover:border-muted-foreground overflow-hidden"
+            className="relative flex size-7 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-muted-foreground/40 transition-all hover:border-primary hover:scale-110"
             title="Custom color"
           >
             <input
               type="color"
               value={styleConfig.accentColor}
               onChange={(e) => onChange({ accentColor: e.target.value })}
-              className="opacity-0 absolute w-px h-px"
+              className="absolute h-px w-px opacity-0"
             />
-            <span className="text-[8px] text-muted-foreground font-bold">
-              +
-            </span>
+            <span className="text-[9px] font-bold text-muted-foreground">+</span>
           </label>
+        </div>
+
+        {/* ****** Active color preview chip ****** */}
+        <div className="mt-3 flex items-center gap-2 rounded-xl border border-border/40 bg-muted/30 px-3 py-2">
+          <div
+            className="size-4 rounded-full shadow-sm"
+            style={{ backgroundColor: styleConfig.accentColor }}
+          />
+          <span className="text-xs text-muted-foreground font-mono">{styleConfig.accentColor}</span>
         </div>
       </div>
     </div>

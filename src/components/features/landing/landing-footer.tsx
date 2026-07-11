@@ -30,6 +30,12 @@ export function LandingFooter() {
           >
             Terms of Service
           </Link>
+          <Link
+            href="/resume-templates"
+            className="hover:text-primary transition-colors"
+          >
+            Resume Templates
+          </Link>
         </div>
         <p className="text-xs uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mt-2">
           &copy; {new Date().getFullYear()} localCV. All rights reserved.
