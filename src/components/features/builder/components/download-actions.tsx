@@ -108,32 +108,56 @@ export function DownloadActions({
   }
 
   return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+    <div className="grid gap-3 sm:grid-cols-3">
       <Button
-        variant="outline"
-        className="gap-2 sm:flex-1"
+        className="h-auto min-h-28 justify-start rounded-2xl border border-primary/20 bg-linear-to-br from-primary to-emerald-500 px-4 py-4 text-left text-primary-foreground shadow-xl shadow-primary/20 hover:from-primary/90 hover:to-emerald-500/90"
         onClick={handleDownloadPdf}
       >
-        <Download className="size-4" />
-        Download (.pdf)
+        <div className="flex w-full items-start gap-3">
+          <div className="rounded-xl bg-white/15 p-2">
+            <Download className="size-5" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold">Download PDF</p>
+            <p className="mt-1 text-xs text-primary-foreground/85">
+              Best for applications and sharing.
+            </p>
+          </div>
+        </div>
       </Button>
 
       <Button
-        variant="outline"
-        className="gap-2 sm:flex-1"
+        className="h-auto min-h-28 justify-start rounded-2xl border border-sky-500/20 bg-linear-to-br from-sky-500 to-cyan-500 px-4 py-4 text-left text-white shadow-xl shadow-sky-500/20 hover:from-sky-500/90 hover:to-cyan-500/90"
         onClick={handleDownloadHtml}
       >
-        <FileCode2 className="size-4" />
-        Download (.html)
+        <div className="flex w-full items-start gap-3">
+          <div className="rounded-xl bg-white/15 p-2">
+            <FileCode2 className="size-5" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold">Download HTML</p>
+            <p className="mt-1 text-xs text-white/85">
+              Useful for personal hosting and edits.
+            </p>
+          </div>
+        </div>
       </Button>
 
       <Button
-        variant="outline"
-        className="gap-2 sm:flex-1"
+        className="h-auto min-h-28 justify-start rounded-2xl border border-fuchsia-500/20 bg-linear-to-br from-fuchsia-500 to-rose-500 px-4 py-4 text-left text-white shadow-xl shadow-fuchsia-500/20 hover:from-fuchsia-500/90 hover:to-rose-500/90"
         onClick={handleDownloadMarkdown}
       >
-        <FileText className="size-4" />
-        Download (.md)
+        <div className="flex w-full items-start gap-3">
+          <div className="rounded-xl bg-white/15 p-2">
+            <FileText className="size-5" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold">Download Markdown</p>
+            <p className="mt-1 text-xs text-white/85">
+              Great for versioning and quick reuse.
+            </p>
+          </div>
+        </div>
       </Button>
     </div>
   );

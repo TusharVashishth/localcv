@@ -9,6 +9,7 @@ import Link from "next/link";
 import { SparklesText } from "@/components/ui/sparkles-text";
 import { TextHighlighter } from "@/components/ui/text-highlighter";
 
+
 export function HeroSection() {
   return (
     <section className="relative overflow-hidden">
