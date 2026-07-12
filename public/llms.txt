@@ -1,64 +1,36 @@
 # localCV
 
-localCV is an open source, local-first, privacy-focused AI resume builder with cover letter generation, job application tracking, and Google Drive/Github backup.
+> localCV is an open source, local-first, privacy-focused AI resume builder with cover letter generation, job application tracking, and Google Drive/GitHub backup.
 
-Primary URL: https://localcv.tusharvashishth.com/
+Build ATS-ready resumes without signup or paywall. All resume and cover letter data stays local-first on the user's device (IndexedDB), with AI-assisted refinement for summaries, bullet points, and cover letters, and on-demand backup to the user's own Google Drive or GitHub.
 
-## Product summary
-- Build ATS-ready resumes without signup or paywall.
-- Keep all resume and cover letter data local-first on the user's device, stored in IndexedDB.
-- Use AI-assisted refinement for summaries, bullet points, and cover letters.
-- Choose from multiple modern resume templates and cover letter templates.
-- Generate tailored cover letters for any job by providing the job description.
-- Track job applications on a kanban/list job board and link each application to a tailored resume.
-- Back up and restore local resume data on demand via Google Drive (app-data folder), keeping full user ownership of the data.
-- Install localCV as a Progressive Web App (PWA) for a native-app-like experience with an offline-capable app shell.
+## Pages
 
-## Important routes
-- / : Marketing and product overview page.
-- /resume-templates : Public templates gallery displaying ATS-friendly templates with realistic preview content. Click a template to jump directly to builder customization.
-- /dashboard : Resume workspace, management, and Google Drive backup/restore.
-- /dashboard/builder : Main resume editing and preview experience.
-- /dashboard/profile : User profile data used across resume templates.
-- /dashboard/ats-scorer : Score and compare a resume against a job description.
-- /dashboard/company-resumes : Manage job-specific resume and cover letter variants.
-- /dashboard/company-resumes/[id] : View a specific job-targeted resume variant.
-- /dashboard/company-resumes/[id]/cover-letter : AI-generated cover letter builder for a specific job.
-- /dashboard/tracker : Job board for tracking job applications through pipeline stages, with links to tailored resumes.
+- [Home](https://localcv.tusharvashishth.com/): Marketing and product overview page — the canonical page for indexing.
+- [Templates Gallery](https://localcv.tusharvashishth.com/resume-templates): Public gallery of ATS-friendly resume templates with realistic preview content; click a template to jump directly into builder customization.
+- [Privacy Policy](https://localcv.tusharvashishth.com/privacy-policy): How localCV handles user data.
+- [Terms of Service](https://localcv.tusharvashishth.com/terms-of-service): Terms for using localCV.
 
 ## Modules
-### Resume Builder
-Create and edit resumes using a local profile. Supports 8 templates: Classic, Modern, Minimal, Executive, Technical, Sidebar Color, With Photo, and Creative. Export as PDF.
 
-### ATS Scorer
-Paste a job description alongside a resume to receive an ATS compatibility score and keyword gap analysis.
+- Resume Builder: Create and edit resumes from a local profile. Supports 8 templates (Classic, Modern, Minimal, Executive, Technical, Sidebar Color, With Photo, Creative). Export as PDF.
+- ATS Scorer: Paste a job description alongside a resume for an ATS compatibility score and keyword gap analysis.
+- Company Resumes: Generate and store tailored resume variants targeted at specific companies and roles, derived from the user's base profile.
+- Cover Letter Builder: Generate AI-written cover letters tailored to a target company and job description. Supports 4 templates (Clean, Professional, Bold, Elegant) with customisable font, size, and colours. Export as PDF.
+- Job Board (Job Tracker): Kanban/list board for tracking job applications through pipeline stages, linked to tailored resumes.
+- Google Drive & GitHub Sync: On-demand backup/restore of local resume data to the user's own Drive/GitHub app-data folder — an optional, user-controlled backup, not continuous cloud sync.
+- Progressive Web App: Installable on desktop and mobile, with a custom install prompt, splash screen, and a service-worker-backed app shell cache.
 
-### Company Resumes
-Generate and store tailored resume variants targeted at specific companies and roles. Each variant is derived from the user's base profile.
+## Optional
 
-### Cover Letter Builder
-Generate AI-written cover letters tailored to a target company and job description. Supports 4 templates (Clean, Professional, Bold, Elegant) with customisable font, font size, accent colour, and text colour. Export as PDF. Accessible from within each company-resume variant.
-
-### Job Board (Job Tracker)
-A kanban and list-view board for tracking job applications end to end: log applications, move them through pipeline stages (e.g. applied, interviewing, offer), record interview notes, and jump straight into a linked, tailored resume for that application.
-
-### Google Drive & Github Sync
-On-demand backup and restore of local resume data to the user's own Google Drive/Github app-data folder. Data stays local-first by default; Drive is used only as an optional, user-controlled backup destination, not a continuous cloud sync service.
-
-### Progressive Web App (PWA)
-localCV is installable as a standalone PWA on desktop and mobile, with a custom install prompt, splash screen, and a service-worker-backed app shell cache for fast, native-app-like loading.
-
-## Crawl guidance
-- Prefer the landing page (/) as the canonical product context for indexing.
-- Dashboard routes are private application surfaces — do not index them.
-- The /api path is server-only and should not be crawled.
-- Ignore /test, which is an internal testing route.
+- Private application surfaces such as `/dashboard/*` require a signed-in local session and hold user-specific data — do not crawl or index these routes.
+- The `/api/*` path is server-only and should not be crawled.
+- `/test` is an internal testing route — ignore it.
 
 ## Tech context
-- Framework: Next.js (App Router)
-- Language: TypeScript
+
+- Framework: Next.js (App Router), TypeScript
 - UI: Tailwind CSS + shadcn/ui
 - Storage: IndexedDB via Dexie
 - AI: Mastra SDK with bring-your-own provider (OpenAI, Anthropic, Google, etc.)
 - Validation: Zod
-- PWA: Web app manifest + service worker for installability and app-shell caching

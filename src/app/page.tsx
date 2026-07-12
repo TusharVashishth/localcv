@@ -1,14 +1,20 @@
+import dynamic from "next/dynamic";
 import { EasyFlowSection } from "@/components/features/landing/easy-flow-section";
 import { HeroSection } from "@/components/features/landing/hero-section";
 import { LandingFooter } from "@/components/features/landing/landing-footer";
 import { OrbitingCirclesSection } from "@/components/features/landing/orbiting-circles-section";
-import { TemplatesSection } from "@/components/features/landing/templates-section";
 import { TestimonialsSection } from "@/components/features/landing/testimonials-section";
 import { TopFeaturesSection } from "@/components/features/landing/top-features-section";
 import BrandLogo from "@/components/shared/brand-logo";
 import { ModeToggle } from "@/components/shared/mode-toggle";
 import { buildPageMetadata } from "@/lib/seo";
 import { FileText } from "lucide-react";
+
+const TemplatesSection = dynamic(() =>
+  import("@/components/features/landing/templates-section").then(
+    (mod) => mod.TemplatesSection,
+  ),
+);
 
 export const metadata = buildPageMetadata({
   title: "Free ATS-Optimized Resume Builder",

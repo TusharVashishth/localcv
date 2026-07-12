@@ -36,9 +36,14 @@ function TemplatePage({
       whileTap={{ scale: 0.985 }}
       className="flex justify-center"
     >
-      <article
+      <div
         onClick={handleNavigate}
-        onKeyDown={(e) => e.key === "Enter" && handleNavigate()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleNavigate();
+          }
+        }}
         role="button"
         tabIndex={0}
         className={cn(
@@ -54,7 +59,7 @@ function TemplatePage({
           style={{ aspectRatio: "794 / 1123", containerType: "inline-size" }}
         >
           {/* ****** Scaled A4 resume — origin top-left fills card column width dynamically ****** */}
-          <div className="pointer-events-none absolute inset-0" aria-hidden>
+          <div className="pointer-events-none absolute inset-0" aria-hidden inert>
             <div
               className="absolute left-0 top-0 origin-top-left"
               style={{
@@ -85,7 +90,7 @@ function TemplatePage({
             </span>
           </div>
         </div>
-      </article>
+      </div>
     </motion.div>
   );
 }
@@ -122,7 +127,7 @@ export function TemplatesSection() {
 
           <Marquee
             pauseOnHover
-            repeat={3}
+            repeat={2}
             className="[--duration:40s] [--gap:1.5rem] px-6 md:px-10"
           >
             {RESUME_TEMPLATES.map((template) => (

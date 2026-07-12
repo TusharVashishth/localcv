@@ -51,7 +51,7 @@ export const TEMPLATE_PREVIEW_DATA: ResumeTemplateData = {
         linkedin: "linkedin.com/in/alexm",
         github: "github.com/alexm",
         photo:
-            "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=320&q=80",
+            "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=160&q=60",
     },
     summary:
         "Product-minded software engineer with 8+ years of experience building resume, hiring, and workflow tools for fast-moving teams. Known for turning ambiguous requirements into polished user experiences, improving system reliability, and mentoring engineers across frontend and platform work.",

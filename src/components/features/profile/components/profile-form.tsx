@@ -12,7 +12,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import {
   Award,
-  Bot,
   Briefcase,
   ChevronRight,
   FileText,
@@ -51,6 +50,7 @@ const TABS = [
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
+type ExperienceItem = ProfileFormValues["experience"][number];
 
 function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -169,7 +169,7 @@ export function ProfileForm() {
         experience: (extracted.experience.length > 0
           ? extracted.experience
           : prev.experience
-        ).map((exp: any, idx: number) => ({
+        ).map((exp: ExperienceItem, idx: number) => ({
           ...exp,
           id: exp.id || Date.now() + idx,
         })),
@@ -273,21 +273,17 @@ export function ProfileForm() {
       }
 
       const refinedExperiences = (data.refined.experience ?? []).map(
-        (exp: any, index: number) => ({
+        (exp: ExperienceItem, index: number) => ({
           ...exp,
           id: formValues.experience[index]?.id || Date.now() + index,
-        })
+        }),
       );
 
-      form.setValue(
-        "experience",
-        refinedExperiences,
-        {
-          shouldDirty: true,
-          shouldTouch: true,
-          shouldValidate: true,
-        },
-      );
+      form.setValue("experience", refinedExperiences, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
       toast.success("Experience section refined with AI.");
     } catch (error) {
       toast.error(
@@ -550,7 +546,6 @@ export function ProfileForm() {
     basic: (
       <ProfileBasicInfoSection
         formValues={formValues}
-        setRootField={setRootField}
         setProfileField={setProfileField}
         errors={errors}
       />

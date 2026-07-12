@@ -6,7 +6,6 @@ import { ThemeProvider } from "@/components/shared/theme-provider";
 import { Toaster } from "sonner";
 import { buildRootMetadata } from "@/lib/seo";
 import "./globals.css";
-import MicrosoftClarity from "@/components/shared/microsoft-clarity";
 import PwaServiceWorker from "@/components/shared/pwa/pwa-service-worker";
 import PwaSplashScreen from "@/components/shared/pwa/pwa-splash-screen";
 import PwaInstallPrompt from "@/components/shared/pwa/pwa-install-prompt";
@@ -46,6 +45,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <>
+            <link rel="preconnect" href="https://www.googletagmanager.com" />
+            <link rel="preconnect" href="https://www.google-analytics.com" />
+          </>
+        )}
         <PwaSplashScreen />
         <AuthSessionProvider>
           <ThemeProvider>
@@ -55,7 +60,6 @@ export default function RootLayout({
         </AuthSessionProvider>
         <PwaServiceWorker />
         <PwaInstallPrompt />
-        <MicrosoftClarity />
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}

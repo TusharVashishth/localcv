@@ -117,9 +117,7 @@ nvm use 24.11.1
 Build the Docker image, passing the build-time public variables as `--build-arg`.
 
 ```bash
-docker build \
-  --build-arg NEXT_PUBLIC_MICROSOFT_CLARITY_ID="vvaekivrvw" \
-  -t local-cv:latest .
+docker build -t local-cv:latest .
 ```
 
 ### D. Tag and Push the Image to ECR

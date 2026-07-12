@@ -116,14 +116,14 @@ export const SparklesText: React.FC<SparklesTextProps> = ({
           if (star.lifespan <= 0) {
             return generateStar();
           } else {
-            return { ...star, lifespan: star.lifespan - 0.1 };
+            return { ...star, lifespan: star.lifespan - 0.4 };
           }
         }),
       );
     };
 
     initializeStars();
-    const interval = setInterval(updateStars, 100);
+    const interval = setInterval(updateStars, 400);
 
     return () => clearInterval(interval);
   }, [colors.first, colors.second, sparklesCount]);
